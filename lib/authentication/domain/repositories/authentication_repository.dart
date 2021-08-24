@@ -1,6 +1,7 @@
 //@dart=2.9
 import 'dart:async';
 import 'dart:convert';
+import 'package:app_prueba/authentication/domain/entities/view_app.dart';
 import 'package:app_prueba/models/api_response/api_catalogos.dart';
 import 'package:app_prueba/models/catalogo.dart';
 import 'package:app_prueba/services/database.dart';
@@ -33,8 +34,17 @@ class AuthenticationRepository {
       if (body != "") {
         Map<String, dynamic> user = jsonDecode(body);
         prefs.setString("token", user['token']);
+        print(user);
+        final viewApp = await NetworkHelper.viewApp(username);
+        Map<String, dynamic> vista = jsonDecode(viewApp);
+        if (vista.containsKey("vista")) {
+          final listData = List<ViewAppModel>.from(
+              vista["vista"].map((x) => ViewAppModel.fromJson(x)));
+        }
+        //Llamar a un API
+
         //Map<String, dynamic> decodedJwt = Utils.parseJwt(user["token"]);
-        
+
         String catalogos = "";
         List<Catalogo> cat = await DBProvider.db.getCatalogos();
 
@@ -64,9 +74,8 @@ class AuthenticationRepository {
         Map<String, dynamic> catalogosApi = jsonDecode(catalogos);
         ApiResponse api = ApiResponse.fromJson(catalogosApi);
         Utils.actualizarCatalogos(api);
-        
+
         _controller.add(AuthenticationStatus.authenticated);
-        
       }
     } on Exception {
       _controller.add(AuthenticationStatus.failed);
@@ -84,6 +93,4 @@ class AuthenticationRepository {
   }
 
   void dispose() => _controller.close();
-
-  
 }

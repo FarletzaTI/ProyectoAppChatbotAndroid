@@ -22,7 +22,6 @@ import 'package:app_prueba/widgets/add_tipo_carga.dart';
 import 'package:app_prueba/condicion_embarque.dart';
 import 'package:app_prueba/widgets/dropdown_widget.dart';
 
-
 class MyApp extends StatelessWidget {
   final AuthenticationRepository authenticationRepository;
   final UserRepository userRepository;
