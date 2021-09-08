@@ -1,8 +1,12 @@
 //@dart=2.9
 import 'dart:async';
+import 'dart:convert';
 import 'package:app_prueba/authentication/domain/entities/user.dart';
+import 'package:app_prueba/authentication/domain/entities/view_app.dart';
 import 'package:app_prueba/authentication/domain/repositories/authentication_repository.dart';
 import 'package:app_prueba/authentication/domain/repositories/user_repository.dart';
+import 'package:app_prueba/const/constants.dart';
+import 'package:app_prueba/services/requests.dart';
 import 'package:app_prueba/util.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
@@ -86,13 +90,25 @@ class AuthenticationBloc
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String jwt = await prefs.getString("token");
       if (jwt != null) {
-        return jwt;
+        Map<String, dynamic> decodedJwt = Utils.parseJwt(jwt);
+        if (decodedJwt["exp"] <
+            (DateTime.now().millisecondsSinceEpoch / 1000).round()) {
+          return null;
+        } else {
+          final bodyview =
+              await NetworkHelper.viewApp(decodedJwt["unique_name"]);
+          if (bodyview != "") {
+            Map<String, dynamic> vista = jsonDecode(bodyview);
+            if (vista.containsKey("Vistas")) {
+              final listData = List<ViewAppModel>.from(vista["Vistas"]
+                      ["vistaopciones"]
+                  .map((x) => ViewAppModel.fromJson(x)));
+              Constants.opcionesModel = listData;
+            }
+          }
+          return jwt;
+        }
       }
-      Map<String, dynamic> decodedJwt = Utils.parseJwt(jwt);
-      if (decodedJwt["exp"] < (DateTime.now().millisecondsSinceEpoch/1000).round()){
-        return null;
-      }
-      
     } catch (e) {
       return null;
     }

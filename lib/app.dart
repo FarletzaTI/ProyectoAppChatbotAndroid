@@ -1,12 +1,19 @@
 // @dart=2.9
+import 'dart:convert';
+
+import 'package:app_prueba/authentication/presentation/pages/chatbot_page.dart';
+import 'package:app_prueba/const/constants.dart';
 import 'package:app_prueba/models/instruccionEmbarque.dart';
 import 'package:app_prueba/search_items.dart';
 import 'package:app_prueba/services/database.dart';
 import 'package:app_prueba/services/requests.dart';
 import 'package:app_prueba/widgets/customAnimatedButtom.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'authentication/domain/entities/view_app.dart';
 import 'authentication/domain/repositories/authentication_repository.dart';
 import 'authentication/domain/repositories/user_repository.dart';
 import 'authentication/presentation/bloc/authentication/authentication_bloc.dart';
@@ -137,6 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<DropdownMenuItem<Week>> _dropdownMenuItems;
   List<DropdownMenuItem<ConEmbarque>> _dropdownMenuItems2;
 
+  bool isLoadView = false;
+  List<Widget> _viewApp = [];
+
   Week _selectedWeek;
   ConEmbarque _selectedCondicion;
 
@@ -146,10 +156,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    // _cargarOpciones();
+    _loadView();
     _dropdownMenuItems = Week.buildDropdownMenuItems();
     _dropdownMenuItems2 = ConEmbarque.buildDropdownMenuItems();
 
     _selectedWeek = _dropdownMenuItems[0].value;
+    setState(() {});
     super.initState();
   }
 
@@ -186,11 +199,126 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Gestion Chatbot Farletza ",
+            style: GoogleFonts.lato(
+                textStyle: TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16)),
+          ),
+          leading: IconButton(
+            icon: Image.asset(
+              "images/SoloLogo.png",
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState.openDrawer();
+            },
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  //_formKey.currentState.reset();
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => super.widget));
+                },
+                icon: Icon(
+                  Icons.restore,
+                  color: primaryColor,
+                ))
+          ],
+        ),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                      ),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              child: Image.asset('images/SoloLogo.png'),
+                              backgroundColor: Colors.white,
+                              radius: MediaQuery.of(context).size.width * 0.10,
+                            ),
+                            Text(
+                              "Vendedor 1",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    //Data dynami, of OptionModels, in future change with providers
+                    isLoadView
+                        ? Container(
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text("Cargando vistas....."),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Container(
+                            child: Column(
+                              children: _viewApp,
+                            ),
+                          ),
+
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Opciones',
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(MdiIcons.logout),
+                      title: Text('Cerrar Sesión'),
+                      onTap: () => {
+                        context
+                            .read<AuthenticationBloc>()
+                            .add(AuthenticationLogoutRequested())
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Text("Versión: 0.9.2")
+            ],
+          ),
+        ),
+        body: _home());
+  }
+
+  Widget _appBarPersonalizado(String titulopag) {
+    return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          "Instrucción de Embarques ",
+          titulopag,
           style: GoogleFonts.lato(
               textStyle: TextStyle(
                   color: primaryColor,
@@ -248,20 +376,28 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                  ListTile(
-                    leading: Icon(MdiIcons.robot),
-                    title: Text('Robot Cotizador'),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(MdiIcons.shipWheel),
-                    title: Text('Instrucción de Embarque'),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+
+                  //Data dynami, of OptionModels, in future change with providers
+                  isLoadView
+                      ? Container(
+                          child: Center(
+                            child: Column(
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Cargando vistas....."),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(
+                          child: Column(
+                            children: _viewApp,
+                          ),
+                        ),
+
                   Divider(
                     height: 1,
                     thickness: 1,
@@ -288,10 +424,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(child: _buildForm()),
     );
   }
 
+  Widget _home() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [Expanded(child: Image.asset('images/SoloLogo.png'))],
+    );
+  }
+
+//_appBarPersonalizado("Instruccion de Embarque")
   Widget _buildForm() {
     return Stack(children: [
       Column(
@@ -352,6 +495,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               )
                             ];
                           }
+
                           return Container(
                             child: Column(
                               children: children,
@@ -711,5 +855,34 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return true;
     }
+  }
+
+  void _loadView() {
+    final opciones = Constants.opcionesModel;
+    opciones.forEach((opcionesModel) {
+      if (opcionesModel.codigoVista.contains("CB")) {
+        _viewApp.add(ListTile(
+          leading: Icon(MdiIcons.robot),
+          title: Text(opcionesModel.descripcion),
+          onTap: () {
+            MaterialPageRoute route;
+            route = MaterialPageRoute(
+                builder: (BuildContext context) => ChatBotPage());
+            Navigator.push(context, route);
+          },
+        ));
+      } else
+        _viewApp.add(ListTile(
+          leading: Icon(MdiIcons.shipWheel),
+          title: Text(opcionesModel.descripcion),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        SingleChildScrollView(child: _buildForm())));
+          },
+        ));
+    });
   }
 }

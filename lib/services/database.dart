@@ -39,6 +39,7 @@ class DBProvider {
         _createTableNavieraV2(batch);
         _createTablePuertoV2(batch);
         _createTableShipperV2(batch);
+        _createTableListaVistas(batch);
         await batch.commit();
       },
     );
@@ -108,6 +109,13 @@ class DBProvider {
 )''');
   }
 
+  void _createTableListaVistas(Batch batch) {
+    batch.execute('''CREATE TABLE VistaDisponible (
+    codigo TEXT,
+    descripcion TEXT        
+)''');
+  }
+
   /// Update Naviera table V1 to V2
   void _updateTableNavieraV1toV2(Batch batch) {
     batch.execute('DROP TABLE IF EXISTS Naviera');
@@ -119,6 +127,14 @@ class DBProvider {
 
   //QUERIES
   getAllNavieras() async {
+    final db = await database;
+    var res = await db.query("Naviera");
+    List<Naviera> list =
+        res.isNotEmpty ? res.map((c) => Naviera.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  getAllVistas() async {
     final db = await database;
     var res = await db.query("Naviera");
     List<Naviera> list =
@@ -171,7 +187,8 @@ class DBProvider {
     final db = await database;
     var batch = db.batch();
     for (var i = 1; i < 6; i++) {
-      batch.update("Catalogo", {"fecha":fechaActual}, where: 'id = ?', whereArgs: [i]);
+      batch.update("Catalogo", {"fecha": fechaActual},
+          where: 'id = ?', whereArgs: [i]);
     }
     batch.commit();
   }
