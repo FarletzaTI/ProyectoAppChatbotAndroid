@@ -38,7 +38,7 @@ class AuthenticationRepository {
         prefs.setString("token", user['token']);
         prefs.setInt("vendedorId", user['vendedorId']);
         prefs.setString("email", username);
-
+        loadViews(user['token']);
         String catalogos = "";
         List<Catalogo> cat = await DBProvider.db.getCatalogos();
 
@@ -88,4 +88,18 @@ class AuthenticationRepository {
   }
 
   void dispose() => _controller.close();
+
+  void loadViews(String jwt) async {
+    Map<String, dynamic> decodedJwt = Utils.parseJwt(jwt);
+    final bodyview = await NetworkHelper.viewApp(decodedJwt["unique_name"]);
+    if (bodyview != "") {
+      Map<String, dynamic> vista = jsonDecode(bodyview);
+      if (vista.containsKey("Vistas")) {
+        final listData = List<ViewAppModel>.from(vista["Vistas"]
+                ["vistaopciones"]
+            .map((x) => ViewAppModel.fromJson(x)));
+        Constants.opcionesModel = listData;
+      }
+    }
+  }
 }
