@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:app_prueba/authentication/presentation/pages/chatbot_page.dart';
 import 'package:app_prueba/const/constants.dart';
 import 'package:app_prueba/models/instruccionEmbarque.dart';
+import 'package:app_prueba/providers/contact_customer_provider.dart';
 import 'package:app_prueba/search_items.dart';
 import 'package:app_prueba/services/database.dart';
 import 'package:app_prueba/services/requests.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'authentication/domain/entities/view_app.dart';
 import 'authentication/domain/repositories/authentication_repository.dart';
@@ -66,47 +68,52 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      theme: ThemeData(errorColor: Colors.red),
-      builder: (context, child) {
-        return Scaffold(
-          body: BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) async {
-              switch (state.status) {
-                case AuthenticationStatus.authenticated:
-                  _navigator.pushAndRemoveUntil<void>(
-                    MyHomePage.route(),
-                    (route) => false,
-                  );
-                  break;
-                case AuthenticationStatus.unauthenticated:
-                  _navigator.pushAndRemoveUntil<void>(
-                    LoginPage.route(),
-                    (route) => false,
-                  );
-                  break;
-                case AuthenticationStatus.failed:
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const Text('Usuario incorrecto!'),
-                    duration: const Duration(seconds: 1),
-                  ));
-                  context
-                      .read<AuthenticationBloc>()
-                      .add(AuthenticationFailed());
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ContactCustomerprovider()),
+      ],
+      child: MaterialApp(
+        navigatorKey: _navigatorKey,
+        theme: ThemeData(errorColor: Colors.red),
+        builder: (context, child) {
+          return Scaffold(
+            body: BlocListener<AuthenticationBloc, AuthenticationState>(
+              listener: (context, state) async {
+                switch (state.status) {
+                  case AuthenticationStatus.authenticated:
+                    _navigator.pushAndRemoveUntil<void>(
+                      MyHomePage.route(),
+                      (route) => false,
+                    );
+                    break;
+                  case AuthenticationStatus.unauthenticated:
+                    _navigator.pushAndRemoveUntil<void>(
+                      LoginPage.route(),
+                      (route) => false,
+                    );
+                    break;
+                  case AuthenticationStatus.failed:
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text('Usuario incorrecto!'),
+                      duration: const Duration(seconds: 1),
+                    ));
+                    context
+                        .read<AuthenticationBloc>()
+                        .add(AuthenticationFailed());
 
-                  //showDialog(context: context, builder: (_) => AlertDialog(title: Text("failed"),));
-                  break;
+                    //showDialog(context: context, builder: (_) => AlertDialog(title: Text("failed"),));
+                    break;
 
-                default:
-                  break;
-              }
-            },
-            child: child,
-          ),
-        );
-      },
-      onGenerateRoute: (_) => SplashPage.route(),
+                  default:
+                    break;
+                }
+              },
+              child: child,
+            ),
+          );
+        },
+        onGenerateRoute: (_) => SplashPage.route(),
+      ),
     );
   }
 }

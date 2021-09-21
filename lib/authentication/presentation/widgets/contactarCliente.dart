@@ -9,14 +9,17 @@ import 'package:app_prueba/models/actualizaRo.dart';
 import 'package:app_prueba/models/agentes.dart';
 import 'package:app_prueba/models/contactosagentes.dart';
 import 'package:app_prueba/models/motivosrechazo.dart';
+import 'package:app_prueba/models/solicitude_model.dart';
 import 'package:app_prueba/models/solicitudes.dart';
 import 'package:app_prueba/models/uploadRes.dart';
+import 'package:app_prueba/providers/contact_customer_provider.dart';
 import 'package:app_prueba/services/requests.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:provider/provider.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
@@ -49,6 +52,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String agenteSelected = '';
   List<DropdownMenuItem> listaDropDownAgentes = [];
   ButtonState stateTextWithIcon = ButtonState.idle;
+  ContactCustomerprovider contactProvider;
+  SolicitudeModel _solicitudeModel;
+  final _roController = TextEditingController();
 
   List<ListaAgentes> agentesList = [];
   String fileName = "";
@@ -79,6 +85,11 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String registroafectado = "";
   @override
   void initState() {
+    contactProvider =
+        Provider.of<ContactCustomerprovider>(context, listen: false);
+    _solicitudeModel =
+        contactProvider.getSolicitude(widget.solicitude.idsolicitud);
+    _roController.text = _solicitudeModel.numRo;
     super.initState();
   }
 
@@ -204,7 +215,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                       height: 20,
                     ),
                     Visibility(
-                      visible: btncontinuar,
+                      visible: _solicitudeModel.btncontinuar,
                       child: Container(
                           child: MaterialButton(
                         onPressed: () {
@@ -216,6 +227,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                           });
                           updateControlTareas(
                               '2', '${widget.solicitude.idsolicitud}', "F");
+                          _solicitudeModel = _solicitudeModel.copyWith(
+                              btncontinuar: false, opcion2: false);
+                          contactProvider.setSolicitude(_solicitudeModel);
                         },
                         child: Text("Siguiente"),
                         color: Colors.blue,
@@ -227,7 +241,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
 
                 //Solicitar informacion de Embarque
                 IgnorePointer(
-                  ignoring: opcion2,
+                  ignoring: contactProvider
+                      .getSolicitude(widget.solicitude.idsolicitud)
+                      .opcion2,
                   child: ExpansionTile(
                     title: Text("Solicitar informacion de Embarque"),
                     leading: Icon(MdiIcons.airplane),
@@ -961,6 +977,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   children: [
                     Text("Ro asignado: $numerodeRo "),
                     CustomTextForm(
+                      controller: _roController,
                       changed: (value) => {ro = value},
                       function: (input) => {ro = input},
                       hintText: 'Ingrese el numero Ro',
@@ -989,7 +1006,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                           width: 20.0,
                         ),
                         Visibility(
-                            visible: btnFinalizarCierre,
+                            visible: _solicitudeModel.opcFinalizar,
                             child: MaterialButton(
                               onPressed: () {
                                 setState(() {
@@ -998,6 +1015,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                 });
                                 updateControlTareas('9',
                                     '${widget.solicitude.idsolicitud}', "F");
+                                _solicitudeModel = _solicitudeModel.copyWith(
+                                    opcFinalizar: false);
+                                contactProvider.setSolicitude(_solicitudeModel);
                               },
                               child: Text("Finalizar"),
                               color: Colors.blue,
@@ -1136,6 +1156,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     try {
       numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
           ro, '${widget.solicitude.idsolicitud}');
+      _solicitudeModel = _solicitudeModel.copyWith(numRo: _roController.text);
+      contactProvider.setSolicitude(_solicitudeModel);
+
       setState(() {
         stateTextWithIcon = ButtonState.success;
       });

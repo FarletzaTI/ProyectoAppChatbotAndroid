@@ -28,7 +28,7 @@ class SolicitudesView extends StatelessWidget {
           height: 12,
         ),
         FutureBuilder(
-            future: NetworkHelper.attemptConsultRequest(param),
+            future: NetworkHelper.attemptConsultRequest(param, context),
             builder: (context, AsyncSnapshot<List<Solicitude>> snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(

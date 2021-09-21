@@ -4,9 +4,13 @@ import 'dart:io';
 import 'package:app_prueba/models/agentes.dart';
 import 'package:app_prueba/models/contactosagentes.dart';
 import 'package:app_prueba/models/motivosrechazo.dart';
+import 'package:app_prueba/models/solicitude_model.dart';
 import 'package:app_prueba/models/solicitudes.dart';
 import 'package:app_prueba/models/uploadRes.dart';
+import 'package:app_prueba/providers/contact_customer_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:async';
@@ -18,25 +22,35 @@ const SERVER_IP =
 //const SERVER_IP = 'http://192.168.168.23:8380/CotizadorWebApi/api'; //local
 
 class NetworkHelper {
-  static Future<List<Solicitude>> attemptConsultRequest(String opc) async {
+  static Future<List<Solicitude>> attemptConsultRequest(
+      String opc, BuildContext context) async {
     List<Solicitude> solicitudes = [];
+    final contactProvider =
+        Provider.of<ContactCustomerprovider>(context, listen: false);
+    contactProvider.emptySolicitude();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var idVendedor = prefs.getInt("idVendedor");
+    var idVendedor = prefs.getInt("vendedorId");
     var token = prefs.getString("token");
     var res = await http.post(
       "$SERVER_IP/solicitudes/consultaSolicitudes",
-      body: {"idvendedor": "10027", "parametroConsulta": opc},
+      body: {"idvendedor": "$idVendedor", "parametroConsulta": opc},
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token',
       },
     );
-    if (res.statusCode != 200) return solicitudes;
-    if (res.statusCode == 200) {
+    if (res.statusCode != 200)
+      return solicitudes;
+    else {
       Map<String, dynamic> consult = jsonDecode(res.body);
       if (consult.containsKey("Solicitudes")) {
-        solicitudes = List<Solicitude>.from(
-            consult["Solicitudes"].map((x) => Solicitude.fromJson(x)));
+        solicitudes = List<Solicitude>.from(consult["Solicitudes"].map((x) {
+          final solicitude = Solicitude.fromJson(x);
+          contactProvider.saveSolicitude(
+              SolicitudeModel(idsolicitud: solicitude.idsolicitud));
+          return solicitude;
+        }));
+        //Guardar en memoria - contactProvider.solicitudeModelList;  //setString (valor - llave (IdUSUSARI))
         return solicitudes;
       } else
         return solicitudes;
