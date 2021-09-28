@@ -61,7 +61,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   final _roController = TextEditingController();
 
   List<ListaAgentes> agentesList = [];
-  List<ListaSeguimiento> seguimientoList = [];
+  List<ClassSeguimiento> seguimientoList = [];
+  List<Listasoli> listasoli = [];
 
   String fileName = "";
   String fileName3 = "";
@@ -902,75 +903,89 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   ),
                 ),
                 //Seguimiento
+
                 ExpansionTile(
                     title: Text("Seguimiento"),
                     leading: Icon(MdiIcons.clipboardSearch, color: Colors.blue),
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(fecha.day.toString() +
-                                    "/" +
-                                    fecha.month.toString() +
-                                    "/" +
-                                    fecha.year.toString()),
-                                RaisedButton(
-                                  onPressed: () => _selectDate(context),
-                                  child: Text('Fecha Desde'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(fechahasta.day.toString() +
-                                    "/" +
-                                    fechahasta.month.toString() +
-                                    "/" +
-                                    fechahasta.year.toString()),
-                                RaisedButton(
-                                  onPressed: () => _selectDateh(context),
-                                  child: Text('Fecha Hasta'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      MaterialButton(
-                        minWidth: 100.0,
-                        height: 40.0,
-                        onPressed: () {
-                          setState(() {
-                            var fecha1 = fecha;
-                            var fecha2 = fechahasta;
-                            //if (fecha2.isAfter(fecha1) == 0) {
-                            /* _consultarSeguimiento(
-                                  fecha.toString(), fechahasta.toString());
- */
-                            armarTabla(fecha.toString(), fechahasta.toString());
-//---------------------------------------
+                      Container(
+                        child: FutureBuilder(
+                            future: NetworkHelper.attemptSeguimiento(
+                                '${widget.solicitude.idsolicitud}'),
+                            builder:
+                                (_, AsyncSnapshot<List<Listasoli>> snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.none:
+                                case ConnectionState.waiting:
+                                  return Center(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          Text("Cargando Seguimientos")
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                default:
+                                  if (snapshot.hasError)
+                                    return Container(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.error),
+                                            SizedBox(
+                                              height: 20.0,
+                                            ),
+                                            Text(
+                                                "No se pudo cargar los datos, por favor intente mas tarde.")
+                                          ],
+                                        ));
+                                  else {
+                                    if (!snapshot.hasData)
+                                      return Container(
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.error),
+                                              SizedBox(
+                                                height: 20.0,
+                                              ),
+                                              Text(
+                                                  "No se pudo cargar los datos, por favor intente mas tarde.")
+                                            ],
+                                          ));
 
-                            //-------------------------------------------------
-                            /* } else {
-                              _showDialog(context,
-                                  "La fecha Hasta debe ser mayor a la fecha Desde"); */
-                          }
-                              // }
-                              );
-                        },
-                        color: Colors.lightBlue,
-                        child: Text('Consultar',
-                            style: TextStyle(color: Colors.white)),
+                                    listasoli = snapshot.data;
+                                    return Container(
+                                      child: HorizontalDataTable(
+                                        leftHandSideColumnWidth: 100,
+                                        rightHandSideColumnWidth: 600,
+                                        isFixedHeader: true,
+                                        headerWidgets: _getTitleWidget(),
+                                        leftSideItemBuilder:
+                                            _generateFirstColumnRow,
+                                        rightSideItemBuilder:
+                                            _generateRightHandSideColumnRow,
+                                        itemCount: listasoli.length,
+                                        rowSeparatorWidget: const Divider(
+                                          color: Colors.blue,
+                                          height: 1.0,
+                                          thickness: 0.0,
+                                        ),
+                                      ),
+                                      height:
+                                          MediaQuery.of(context).size.height,
+                                    );
+                                  }
+                              }
+                            }),
                       ),
                     ]),
                 //Cierre
@@ -1128,37 +1143,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     );
   }
 
-  Future<List<ListaSeguimiento>> armarTabla(
-      String fechadesde, String fechaHasta) async {
-    seguimientoList = await NetworkHelper.attemptSeguimiento(
-        fecha.toString(), fechahasta.toString());
-    seguimientoList.forEach((value) {
-      _consultarSeguimiento(seguimientoList.length, value);
-    });
-    setState(() {});
-    //return seguimientoList;
-//}
-  }
-
-  _showDialog(BuildContext ctx, String texto) {
-    showDialog(
-        context: ctx,
-        builder: (context) {
-          return SimpleDialog(
-            title: Center(child: Text("Nota")),
-            children: <Widget>[
-              Center(child: Text("$texto")),
-              Center(
-                  child: FlatButton(
-                      child: Text("Ok"),
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                      })),
-            ],
-          );
-        });
-  }
-
   launchWhatsApp(String phone) async {
     final link = WhatsAppUnilink(
       phoneNumber: phone,
@@ -1217,7 +1201,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return registroafectado;
   }
 
-  Widget _consultarSeguimiento(int filas, ListaSeguimiento listaaa) {
+  Widget _consultarSeguimiento(int filas, ClassSeguimiento listaaa) {
     return Container(
       child: HorizontalDataTable(
         leftHandSideColumnWidth: 100,
@@ -1311,43 +1295,15 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: fecha,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
-    if (pickedDate != null && pickedDate != fecha)
-      setState(() {
-        fecha = pickedDate;
-      });
-  }
-
-  Future<void> _selectDateh(BuildContext context) async {
-    final DateTime pickedDateh = await showDatePicker(
-        context: context,
-        initialDate: fechahasta,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
-    if (pickedDateh != null && pickedDateh != fechahasta)
-      setState(() {
-        fechahasta = pickedDateh;
-      });
-  }
-
   List<Widget> _getTitleWidget() {
     return [
-      _getTitleItemWidget('N°', 20),
       _getTitleItemWidget(
-        '#Solicitud',
-        70,
+        'N°',
+        50,
       ),
-      _getTitleItemWidget('Nombre', 150),
+      _getTitleItemWidget('Tarea', 150),
       _getTitleItemWidget('Estado', 100),
-      _getTitleItemWidget('Ro', 50),
-      _getTitleItemWidget('Tarea Actual', 100),
       _getTitleItemWidget('Fecha Ingreso', 100),
-      _getTitleItemWidget('Fecha Seguimiento', 100),
     ];
   }
 
@@ -1364,7 +1320,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   Widget _generateFirstColumnRow(BuildContext context, int index) {
     return Container(
       child: Text('$index'),
-      width: 70,
+      width: 50,
       height: 40,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
       alignment: Alignment.center,
@@ -1375,14 +1331,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return Row(
       children: <Widget>[
         Container(
-          child: Text(' 1'),
-          width: 150,
-          height: 40,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-          alignment: Alignment.center,
-        ),
-        Container(
-          child: Text('Laura perez'),
+          child: Text('${listasoli[index].tarea}'), //tarea
           width: 150,
           height: 40,
           padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
@@ -1391,9 +1340,18 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
         Container(
           child: Row(
             children: <Widget>[
-              Icon(Icons.notifications_active,
-                  color: index % 3 == 0 ? Colors.red : Colors.green),
-              Text(index % 3 == 0 ? 'Finalizado' : 'Activo')
+              listasoli[index].estado.toLowerCase() == 'a'
+                  ? Icon(
+                      Icons.check_circle_outline_outlined,
+                      color: Colors.green,
+                    )
+                  : Icon(
+                      Icons.check_circle_outline_outlined,
+                      color: Colors.red,
+                    ),
+              Text(listasoli[index].estado.toLowerCase() != 'a'
+                  ? 'Finalizado'
+                  : 'Activo') //estado
             ],
           ),
           width: 100,
@@ -1402,28 +1360,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
           alignment: Alignment.center,
         ),
         Container(
-          child: Text('N/A'),
-          width: 50,
-          height: 40,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-          alignment: Alignment.center,
-        ),
-        Container(
-          child: Text('contactar CL'),
-          width: 100,
-          height: 40,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-          alignment: Alignment.center,
-        ),
-        Container(
-          child: Text('12/09/2021'),
-          width: 100,
-          height: 40,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-          alignment: Alignment.center,
-        ),
-        Container(
-          child: Text('22/09/2021'),
+          child: Text('${listasoli[index].fechaTarea}'), //fecha
           width: 100,
           height: 40,
           padding: EdgeInsets.fromLTRB(5, 0, 0, 0),

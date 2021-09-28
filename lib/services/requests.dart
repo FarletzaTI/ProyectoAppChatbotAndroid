@@ -143,21 +143,15 @@ class NetworkHelper {
     }
   }
 
-  static Future<List<ListaSeguimiento>> attemptSeguimiento(
-      String fechadesde, String fechahasta) async {
+  static Future<List<Listasoli>> attemptSeguimiento(String idsolicitud) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<ListaSeguimiento> listasoli = [];
+    List<Listasoli> listasoli = [];
 
     var token = prefs.getString("token");
-    var idVendedor = prefs.getInt("vendedorId");
 
     var res = await http.post(
       "$SERVER_IP/solicitudes/ConsultaSeguimiento",
-      body: {
-        "idvendedor": "$idVendedor",
-        "FechaDesde": fechadesde,
-        "FechaHasta": fechahasta
-      },
+      body: {"idsolicitud": idsolicitud},
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token',
       },
@@ -167,8 +161,10 @@ class NetworkHelper {
       Map<String, dynamic> consult = jsonDecode(res.body);
       //if (consult.containsKey("ListaMotivos")) {
       try {
-        listasoli = List<ListaSeguimiento>.from(
-            consult["Listasoli"].map((x) => ListaSeguimiento.fromJson(x)));
+        listasoli = List<Listasoli>.from(
+            consult["Listasoli"].map((x) => Listasoli.fromJson(x)));
+
+        //List<ClassSeguimiento>.from(consult["Listasoli"].map((x) => ClassSeguimiento.fromJson(x)));
       } on Exception catch (e) {
         // print(e.toString());
       }

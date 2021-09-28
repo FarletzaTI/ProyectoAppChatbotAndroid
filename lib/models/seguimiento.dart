@@ -1,11 +1,10 @@
 //@dart=2.9
-
-class ListaSeguimiento {
+class ClassSeguimiento {
   List<Listasoli> listasoli;
 
-  ListaSeguimiento({this.listasoli});
+  ClassSeguimiento({this.listasoli});
 
-  ListaSeguimiento.fromJson(Map<String, dynamic> json) {
+  ClassSeguimiento.fromJson(Map<String, dynamic> json) {
     if (json['Listasoli'] != null) {
       listasoli = new List<Listasoli>();
       json['Listasoli'].forEach((v) {
@@ -24,42 +23,23 @@ class ListaSeguimiento {
 }
 
 class Listasoli {
-  int idSolicitud;
-  String nombre;
-  String estado;
-  String ro;
-  String fechaIngresoSol;
-  String fechaTarea;
   String tarea;
+  String estado;
+  String fechaTarea;
 
-  Listasoli(
-      {this.idSolicitud,
-      this.nombre,
-      this.estado,
-      this.ro,
-      this.fechaIngresoSol,
-      this.fechaTarea,
-      this.tarea});
+  Listasoli({this.tarea, this.estado, this.fechaTarea});
 
   Listasoli.fromJson(Map<String, dynamic> json) {
-    idSolicitud = json['Id_solicitud'];
-    nombre = json['nombre'];
-    estado = json['estado'];
-    ro = json['ro'];
-    fechaIngresoSol = json['FechaIngresoSol'];
-    fechaTarea = json['FechaTarea'];
     tarea = json['Tarea'];
+    estado = json['estado'];
+    fechaTarea = json['FechaTarea'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Id_solicitud'] = this.idSolicitud;
-    data['nombre'] = this.nombre;
-    data['estado'] = this.estado;
-    data['ro'] = this.ro;
-    data['FechaIngresoSol'] = this.fechaIngresoSol;
-    data['FechaTarea'] = this.fechaTarea;
     data['Tarea'] = this.tarea;
+    data['estado'] = this.estado;
+    data['FechaTarea'] = this.fechaTarea;
     return data;
   }
 }
