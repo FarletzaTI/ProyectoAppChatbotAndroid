@@ -2,6 +2,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:app_prueba/authentication/domain/entities/seguimiento.dart';
+import 'package:app_prueba/models/seguimiento.dart';
+import 'package:horizontal_data_table/horizontal_data_table.dart';
 
 import 'package:app_prueba/authentication/presentation/widgets/seleccontactos.dart';
 import 'package:app_prueba/const/gradient.dart';
@@ -45,6 +48,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   bool btnSubirArchivos2 = false;
   bool btnSubirArchivos3 = false;
   bool btnSubirArchivosCot = false;
+  DateTime _currentDate = DateTime(2019, 2, 3);
 
   bool btnFinalizarCierre = true;
   bool btnNextInfoEmb = true;
@@ -57,6 +61,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   final _roController = TextEditingController();
 
   List<ListaAgentes> agentesList = [];
+  List<ListaSeguimiento> seguimientoList = [];
+
   String fileName = "";
   String fileName3 = "";
   String fileName4 = "";
@@ -69,6 +75,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String nombreAgenteSele = '';
   FilePickerResult result;
   FilePickerResult result1;
+  DateTime fecha = DateTime.now();
+  DateTime fechahasta = DateTime.now();
 
   void changeEmail(String email) {
     setState(() {
@@ -102,6 +110,13 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     String estado = "";
     bool isEnable = true;
     bool isEnable2 = true;
+
+    /*    int day = new DateTime.now().day;
+    int mes = new DateTime.now().month;
+    int anyo = new DateTime.now().year;
+
+    String currentDate = "$day/$mes/$anyo"; */
+
     if (lineaNg == 'E')
       nombrePais = widget.solicitude.paisDestino;
     else
@@ -124,7 +139,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                     style: TextStyle(
                         fontSize: 16.0), //, fontWeight: FontWeight.w500),
                   ),
-                  leading: Icon(MdiIcons.account),
+                  leading: Icon(MdiIcons.account, color: Colors.blue),
                   children: <Widget>[
                     Container(
                         child: RichText(
@@ -185,7 +200,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                 updateControlTareas('2',
                                     '${widget.solicitude.idsolicitud}', "P");
                               },
-                              icon: Icon(MdiIcons.phoneOutline)),
+                              icon: Icon(MdiIcons.phoneOutline,
+                                  color: Colors.blue)),
                           VerticalDivider(
                             color: Colors.black87,
                             width: 1,
@@ -196,7 +212,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                 updateControlTareas('2',
                                     '${widget.solicitude.idsolicitud}', "P");
                               },
-                              icon: Icon(MdiIcons.whatsapp)),
+                              icon:
+                                  Icon(MdiIcons.whatsapp, color: Colors.blue)),
                           VerticalDivider(
                             color: Colors.black87,
                             width: 1,
@@ -207,7 +224,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                 updateControlTareas('2',
                                     '${widget.solicitude.idsolicitud}', "P");
                               },
-                              icon: Icon(MdiIcons.emailOutline))
+                              icon: Icon(MdiIcons.emailOutline,
+                                  color: Colors.blue))
                         ],
                       ),
                     ),
@@ -238,7 +256,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                     ),
                   ],
                 ),
-
                 //Solicitar informacion de Embarque
                 IgnorePointer(
                   ignoring: contactProvider
@@ -246,7 +263,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                       .opcion2,
                   child: ExpansionTile(
                     title: Text("Solicitar informacion de Embarque"),
-                    leading: Icon(MdiIcons.airplane),
+                    leading: Icon(MdiIcons.airplane, color: Colors.blue),
                     children: [
                       Container(
                         height: 75,
@@ -271,7 +288,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('3',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.phoneOutline)),
+                                icon: Icon(MdiIcons.phoneOutline,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -282,7 +300,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('3',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.whatsapp)),
+                                icon: Icon(MdiIcons.whatsapp,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -293,7 +312,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('3',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.emailOutline)),
+                                icon: Icon(MdiIcons.emailOutline,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -311,7 +331,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                     });
                                   } else {}
                                 },
-                                icon: Icon(MdiIcons.fileUpload)),
+                                icon: Icon(MdiIcons.fileUpload,
+                                    color: Colors.blue)),
                           ],
                         ),
                       ),
@@ -390,7 +411,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   ignoring: opcion3,
                   child: ExpansionTile(
                     title: Text("Negociacion Interna"),
-                    leading: Icon(MdiIcons.ballotOutline),
+                    leading: Icon(MdiIcons.ballotOutline, color: Colors.blue),
                     children: [
                       Container(
                         child: FutureBuilder(
@@ -652,7 +673,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('4',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.phoneOutline)),
+                                icon: Icon(MdiIcons.phoneOutline,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -663,7 +685,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('4',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.whatsapp)),
+                                icon: Icon(MdiIcons.whatsapp,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -674,7 +697,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   updateControlTareas('4',
                                       '${widget.solicitude.idsolicitud}', "P");
                                 },
-                                icon: Icon(MdiIcons.emailOutline)),
+                                icon: Icon(MdiIcons.emailOutline,
+                                    color: Colors.blue)),
                             VerticalDivider(
                               color: Colors.black87,
                               width: 1,
@@ -693,7 +717,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                     // User canceled the picker
                                   }
                                 },
-                                icon: Icon(MdiIcons.fileUpload)),
+                                icon: Icon(MdiIcons.fileUpload,
+                                    color: Colors.blue)),
                           ],
                         ),
                       ),
@@ -788,7 +813,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   ignoring: opcion4,
                   child: ExpansionTile(
                     title: Text("Cotizacion"),
-                    leading: Icon(MdiIcons.textBox),
+                    leading: Icon(MdiIcons.textBox, color: Colors.blue),
                     children: [
                       //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       //  children: [
@@ -878,13 +903,81 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                 ),
                 //Seguimiento
                 ExpansionTile(
-                  title: Text("Seguimiento"),
-                  leading: Icon(MdiIcons.clipboardSearch),
-                ),
+                    title: Text("Seguimiento"),
+                    leading: Icon(MdiIcons.clipboardSearch, color: Colors.blue),
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text(fecha.day.toString() +
+                                    "/" +
+                                    fecha.month.toString() +
+                                    "/" +
+                                    fecha.year.toString()),
+                                RaisedButton(
+                                  onPressed: () => _selectDate(context),
+                                  child: Text('Fecha Desde'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text(fechahasta.day.toString() +
+                                    "/" +
+                                    fechahasta.month.toString() +
+                                    "/" +
+                                    fechahasta.year.toString()),
+                                RaisedButton(
+                                  onPressed: () => _selectDateh(context),
+                                  child: Text('Fecha Hasta'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      MaterialButton(
+                        minWidth: 100.0,
+                        height: 40.0,
+                        onPressed: () {
+                          setState(() {
+                            var fecha1 = fecha;
+                            var fecha2 = fechahasta;
+                            //if (fecha2.isAfter(fecha1) == 0) {
+                            /* _consultarSeguimiento(
+                                  fecha.toString(), fechahasta.toString());
+ */
+                            armarTabla(fecha.toString(), fechahasta.toString());
+//---------------------------------------
+
+                            //-------------------------------------------------
+                            /* } else {
+                              _showDialog(context,
+                                  "La fecha Hasta debe ser mayor a la fecha Desde"); */
+                          }
+                              // }
+                              );
+                        },
+                        color: Colors.lightBlue,
+                        child: Text('Consultar',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ]),
                 //Cierre
                 ExpansionTile(
                   title: Text("Cierre"),
-                  leading: Icon(MdiIcons.checkboxMarkedCircleOutline),
+                  leading: Icon(MdiIcons.checkboxMarkedCircleOutline,
+                      color: Colors.blue),
                   children: [
                     Container(
                         child: FutureBuilder(
@@ -968,12 +1061,12 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                 //Registrar Cliente
                 ExpansionTile(
                   title: Text("Registrar Cliente"),
-                  leading: Icon(MdiIcons.accountPlus),
+                  leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
                 ),
                 //CREAR RO
                 ExpansionTile(
                   title: Text("Crear Ro"),
-                  leading: Icon(MdiIcons.pencilBox),
+                  leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
                   children: [
                     Text("Ro asignado: $numerodeRo "),
                     CustomTextForm(
@@ -1035,6 +1128,37 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     );
   }
 
+  Future<List<ListaSeguimiento>> armarTabla(
+      String fechadesde, String fechaHasta) async {
+    seguimientoList = await NetworkHelper.attemptSeguimiento(
+        fecha.toString(), fechahasta.toString());
+    seguimientoList.forEach((value) {
+      _consultarSeguimiento(seguimientoList.length, value);
+    });
+    setState(() {});
+    //return seguimientoList;
+//}
+  }
+
+  _showDialog(BuildContext ctx, String texto) {
+    showDialog(
+        context: ctx,
+        builder: (context) {
+          return SimpleDialog(
+            title: Center(child: Text("Nota")),
+            children: <Widget>[
+              Center(child: Text("$texto")),
+              Center(
+                  child: FlatButton(
+                      child: Text("Ok"),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                      })),
+            ],
+          );
+        });
+  }
+
   launchWhatsApp(String phone) async {
     final link = WhatsAppUnilink(
       phoneNumber: phone,
@@ -1091,6 +1215,26 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     registroafectado = await NetworkHelper.attempUpdatecontrolTareas(
         idtarea, idsolicitud, estado);
     return registroafectado;
+  }
+
+  Widget _consultarSeguimiento(int filas, ListaSeguimiento listaaa) {
+    return Container(
+      child: HorizontalDataTable(
+        leftHandSideColumnWidth: 100,
+        rightHandSideColumnWidth: 600,
+        isFixedHeader: true,
+        headerWidgets: _getTitleWidget(),
+        leftSideItemBuilder: _generateFirstColumnRow,
+        rightSideItemBuilder: _generateRightHandSideColumnRow,
+        itemCount: filas,
+        rowSeparatorWidget: const Divider(
+          color: Colors.blue,
+          height: 1.0,
+          thickness: 0.0,
+        ),
+      ),
+      height: MediaQuery.of(context).size.height,
+    );
   }
 
   Widget _menuItemHint(String hint, IconData icon) {
@@ -1165,5 +1309,127 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     } catch (e) {
       stateTextWithIcon = ButtonState.fail;
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime pickedDate = await showDatePicker(
+        context: context,
+        initialDate: fecha,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2050));
+    if (pickedDate != null && pickedDate != fecha)
+      setState(() {
+        fecha = pickedDate;
+      });
+  }
+
+  Future<void> _selectDateh(BuildContext context) async {
+    final DateTime pickedDateh = await showDatePicker(
+        context: context,
+        initialDate: fechahasta,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2050));
+    if (pickedDateh != null && pickedDateh != fechahasta)
+      setState(() {
+        fechahasta = pickedDateh;
+      });
+  }
+
+  List<Widget> _getTitleWidget() {
+    return [
+      _getTitleItemWidget('N°', 20),
+      _getTitleItemWidget(
+        '#Solicitud',
+        70,
+      ),
+      _getTitleItemWidget('Nombre', 150),
+      _getTitleItemWidget('Estado', 100),
+      _getTitleItemWidget('Ro', 50),
+      _getTitleItemWidget('Tarea Actual', 100),
+      _getTitleItemWidget('Fecha Ingreso', 100),
+      _getTitleItemWidget('Fecha Seguimiento', 100),
+    ];
+  }
+
+  Widget _getTitleItemWidget(String label, double width) {
+    return Container(
+      child: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+      width: width,
+      height: 56,
+      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+      alignment: Alignment.center,
+    );
+  }
+
+  Widget _generateFirstColumnRow(BuildContext context, int index) {
+    return Container(
+      child: Text('$index'),
+      width: 70,
+      height: 40,
+      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+      alignment: Alignment.center,
+    );
+  }
+
+  Widget _generateRightHandSideColumnRow(BuildContext context, int index) {
+    return Row(
+      children: <Widget>[
+        Container(
+          child: Text(' 1'),
+          width: 150,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Text('Laura perez'),
+          width: 150,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.notifications_active,
+                  color: index % 3 == 0 ? Colors.red : Colors.green),
+              Text(index % 3 == 0 ? 'Finalizado' : 'Activo')
+            ],
+          ),
+          width: 100,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Text('N/A'),
+          width: 50,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Text('contactar CL'),
+          width: 100,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Text('12/09/2021'),
+          width: 100,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+        Container(
+          child: Text('22/09/2021'),
+          width: 100,
+          height: 40,
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.center,
+        ),
+      ],
+    );
   }
 }

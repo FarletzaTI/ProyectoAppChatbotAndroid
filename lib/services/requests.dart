@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_prueba/models/agentes.dart';
 import 'package:app_prueba/models/contactosagentes.dart';
 import 'package:app_prueba/models/motivosrechazo.dart';
+import 'package:app_prueba/models/seguimiento.dart';
 import 'package:app_prueba/models/solicitude_model.dart';
 import 'package:app_prueba/models/solicitudes.dart';
 import 'package:app_prueba/models/uploadRes.dart';
@@ -139,6 +140,39 @@ class NetworkHelper {
       return agentes;
       // } else
       //  return agentes;
+    }
+  }
+
+  static Future<List<ListaSeguimiento>> attemptSeguimiento(
+      String fechadesde, String fechahasta) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<ListaSeguimiento> listasoli = [];
+
+    var token = prefs.getString("token");
+    var idVendedor = prefs.getInt("vendedorId");
+
+    var res = await http.post(
+      "$SERVER_IP/solicitudes/ConsultaSeguimiento",
+      body: {
+        "idvendedor": "$idVendedor",
+        "FechaDesde": fechadesde,
+        "FechaHasta": fechahasta
+      },
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (res.statusCode != 200) return listasoli;
+    if (res.statusCode == 200) {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      //if (consult.containsKey("ListaMotivos")) {
+      try {
+        listasoli = List<ListaSeguimiento>.from(
+            consult["Listasoli"].map((x) => ListaSeguimiento.fromJson(x)));
+      } on Exception catch (e) {
+        // print(e.toString());
+      }
+      return listasoli;
     }
   }
 
