@@ -924,7 +924,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                             MainAxisAlignment.center,
                                         children: [
                                           CircularProgressIndicator(),
-                                          Text("Cargando Seguimientos")
+                                          Text("Cargando....")
                                         ],
                                       ),
                                     ),
@@ -1205,7 +1205,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return Container(
       child: HorizontalDataTable(
         leftHandSideColumnWidth: 100,
-        rightHandSideColumnWidth: 600,
+        rightHandSideColumnWidth: 100,
         isFixedHeader: true,
         headerWidgets: _getTitleWidget(),
         leftSideItemBuilder: _generateFirstColumnRow,
@@ -1217,7 +1217,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
           thickness: 0.0,
         ),
       ),
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height -
+          10, //MediaQuery.of(context).size.height,
     );
   }
 
@@ -1299,11 +1300,11 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return [
       _getTitleItemWidget(
         'N°',
-        50,
+        30,
       ),
-      _getTitleItemWidget('Tarea', 150),
+      _getTitleItemWidget('Tarea', 100),
       _getTitleItemWidget('Estado', 100),
-      _getTitleItemWidget('Fecha Ingreso', 100),
+      _getTitleItemWidget('Fecha Ingreso', 140),
     ];
   }
 
@@ -1311,7 +1312,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return Container(
       child: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
       width: width,
-      height: 56,
+      height: 40,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
       alignment: Alignment.center,
     );
@@ -1320,7 +1321,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   Widget _generateFirstColumnRow(BuildContext context, int index) {
     return Container(
       child: Text('$index'),
-      width: 50,
+      width: 20,
       height: 40,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
       alignment: Alignment.center,
@@ -1332,7 +1333,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       children: <Widget>[
         Container(
           child: Text('${listasoli[index].tarea}'), //tarea
-          width: 150,
+          width: 100,
           height: 40,
           padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.center,
@@ -1361,7 +1362,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
         ),
         Container(
           child: Text('${listasoli[index].fechaTarea}'), //fecha
-          width: 100,
+          width: 140,
           height: 40,
           padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.center,
