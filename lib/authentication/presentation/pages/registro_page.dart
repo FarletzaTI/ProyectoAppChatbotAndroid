@@ -1,4 +1,5 @@
 //@dart=2.9
+import 'package:app_prueba/models/solicitudes_Customer.dart';
 import 'package:app_prueba/services/requests.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -7,7 +8,9 @@ import 'package:progress_state_button/progress_button.dart';
 import '../../../form.dart';
 
 class RegistroCustomersPage extends StatefulWidget {
-  RegistroCustomersPage({Key key}) : super(key: key);
+  final Solicitudes solicitude;
+
+  const RegistroCustomersPage({Key key, this.solicitude}) : super(key: key);
 
   @override
   _RegistroCustomersPage createState() => _RegistroCustomersPage();

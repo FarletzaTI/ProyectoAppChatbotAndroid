@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:app_prueba/authentication/presentation/pages/chatbot_page.dart';
+import 'package:app_prueba/authentication/presentation/pages/solicitudesCustomers_page.dart';
 import 'package:app_prueba/const/constants.dart';
 import 'package:app_prueba/models/instruccionEmbarque.dart';
 import 'package:app_prueba/providers/contact_customer_provider.dart';
@@ -878,7 +879,32 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(context, route);
           },
         ));
-      } else
+      }
+      if (opcionesModel.codigoVista.contains("RC")) {
+        _viewApp.add(ListTile(
+          leading: Icon(MdiIcons.bookCheckOutline),
+          title: Text(opcionesModel.descripcion),
+          onTap: () {
+            MaterialPageRoute route;
+            route = MaterialPageRoute(
+                builder: (BuildContext context) => solicitudesCustomerPage());
+            Navigator.push(context, route);
+          },
+        ));
+      }
+      if (opcionesModel.codigoVista.contains("BSC")) {
+        _viewApp.add(ListTile(
+          leading: Icon(MdiIcons.earth),
+          title: Text(opcionesModel.descripcion),
+          onTap: () {
+            /*  MaterialPageRoute route;
+            route = MaterialPageRoute(
+                builder: (BuildContext context) => ChatBotPage());
+            Navigator.push(context, route); */
+          },
+        ));
+      }
+      if (opcionesModel.codigoVista.contains("IE")) {
         _viewApp.add(ListTile(
           leading: Icon(MdiIcons.shipWheel),
           title: Text(opcionesModel.descripcion),
@@ -890,6 +916,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         SingleChildScrollView(child: _buildForm())));
           },
         ));
+      }
     });
   }
 }

@@ -23,14 +23,6 @@ class vistaDisponible {
 }
 
 class OpcionesModel {
-  /* List<OpcionesModel> vistaopciones;
-
-  OpcionesModel({  required this.vistaopciones});
-
-   factory OpcionesModel.fromJson(Map<String, dynamic> json) => OpcionesModel(
-        vistaopciones:json["vistaopciones"]);
-         */
-
   List<ViewAppModel> vistaopciones = [];
 
   OpcionesModel({this.vistaopciones});

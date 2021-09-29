@@ -7,6 +7,7 @@ import 'package:app_prueba/models/motivosrechazo.dart';
 import 'package:app_prueba/models/seguimiento.dart';
 import 'package:app_prueba/models/solicitude_model.dart';
 import 'package:app_prueba/models/solicitudes.dart';
+import 'package:app_prueba/models/solicitudes_Customer.dart';
 import 'package:app_prueba/models/uploadRes.dart';
 import 'package:app_prueba/providers/contact_customer_provider.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,41 @@ class NetworkHelper {
       if (consult.containsKey("Solicitudes")) {
         solicitudes = List<Solicitude>.from(consult["Solicitudes"].map((x) {
           final solicitude = Solicitude.fromJson(x);
+          contactProvider.saveSolicitude(
+              SolicitudeModel(idsolicitud: solicitude.idsolicitud));
+          return solicitude;
+        }));
+        //Guardar en memoria - contactProvider.solicitudeModelList;  //setString (valor - llave (IdUSUSARI))
+        return solicitudes;
+      } else
+        return solicitudes;
+    }
+  }
+
+  static Future<List<Solicitudes>> attemptConsultRequestCus(
+      String opc, BuildContext context) async {
+    List<Solicitudes> solicitudes = [];
+    final contactProvider =
+        Provider.of<ContactCustomerprovider>(context, listen: false);
+    contactProvider.emptySolicitude();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var idcustomer = prefs.getInt("vendedorId");
+    var token = prefs.getString("token");
+    var res = await http.post(
+      "$SERVER_IP/solicitudes/consultaSolicitudesCustomers",
+      body: {"IdCustomer": "$idcustomer", "parametroConsulta": opc},
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (res.statusCode != 200)
+      return solicitudes;
+    else {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      if (consult.containsKey("Solicitudes")) {
+        solicitudes = List<Solicitudes>.from(consult["Solicitudes"].map((x) {
+          final solicitude = Solicitudes.fromJson(x);
           contactProvider.saveSolicitude(
               SolicitudeModel(idsolicitud: solicitude.idsolicitud));
           return solicitude;

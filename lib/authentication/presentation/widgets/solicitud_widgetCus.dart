@@ -1,16 +1,16 @@
 //@dart=2.9
-import 'package:app_prueba/models/solicitudes.dart';
-import 'package:app_prueba/services/requests.dart';
 
+import 'package:app_prueba/authentication/presentation/pages/registro_page.dart';
+import 'package:app_prueba/models/solicitudes_Customer.dart';
+import 'package:app_prueba/services/requests.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'contactarCliente.dart';
-
-class SolicitudesView extends StatelessWidget {
+class SolicitudesViewCus extends StatelessWidget {
   final String titulo;
   final String param;
-  const SolicitudesView({Key key, this.titulo, this.param}) : super(key: key);
+  const SolicitudesViewCus({Key key, this.titulo, this.param})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +28,8 @@ class SolicitudesView extends StatelessWidget {
           height: 12,
         ),
         FutureBuilder(
-            future: NetworkHelper.attemptConsultRequest(param, context),
-            builder: (context, AsyncSnapshot<List<Solicitude>> snapshot) {
+            future: NetworkHelper.attemptConsultRequestCus(param, context),
+            builder: (context, AsyncSnapshot<List<Solicitudes>> snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
                   shrinkWrap: true,
@@ -43,11 +43,11 @@ class SolicitudesView extends StatelessWidget {
                             title: Text(cliente.nombre),
                             leading: Icon(MdiIcons.account),
                             subtitle: Text(
-                                "#Solicitud: ${cliente.idsolicitud}, Origen: ${cliente.paisOrigen}, Destino: ${cliente.paisDestino}"),
+                                "#Solicitud: ${cliente.idsolicitud} - Vendedor: ${cliente.vendedor}"),
                             onTap: () {
                               final route = MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      ClientDetailPage(
+                                      RegistroCustomersPage(
                                         solicitude: cliente,
                                       ));
                               Navigator.push(context, route);

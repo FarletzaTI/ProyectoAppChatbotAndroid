@@ -48,7 +48,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   bool btnSubirArchivos2 = false;
   bool btnSubirArchivos3 = false;
   bool btnSubirArchivosCot = false;
-  DateTime _currentDate = DateTime(2019, 2, 3);
+  //DateTime _currentDate = DateTime(2019, 2, 3);
 
   bool btnFinalizarCierre = true;
   bool btnNextInfoEmb = true;
@@ -71,13 +71,13 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String emailContactoAgente = '';
   String telfContactoAgente = '';
   String nombreContactoAg = "";
-  String ro = "";
-  String numerodeRo = '';
+/*   String ro = "";
+  String numerodeRo = ''; */
   String nombreAgenteSele = '';
   FilePickerResult result;
   FilePickerResult result1;
-  DateTime fecha = DateTime.now();
-  DateTime fechahasta = DateTime.now();
+/*   DateTime fecha = DateTime.now();
+  DateTime fechahasta = DateTime.now(); */
 
   void changeEmail(String email) {
     setState(() {
@@ -107,10 +107,11 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     String lineaNg = widget.solicitude.lineaNegocio;
     String nombrePais = '';
     listaDropDownAgentes = [];
-    int index = 0;
-    String estado = "";
     bool isEnable = true;
-    bool isEnable2 = true;
+    /*   int index = 0;
+    String estado = "";
+   
+    bool isEnable2 = true; */
 
     /*    int day = new DateTime.now().day;
     int mes = new DateTime.now().month;
@@ -981,7 +982,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                         ),
                                       ),
                                       height:
-                                          MediaQuery.of(context).size.height,
+                                          MediaQuery.of(context).size.height -
+                                              7,
+                                      // MediaQuery.of(context).size.height,
                                     );
                                   }
                               }
@@ -1140,7 +1143,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return registroafectado;
   }
 
-  Widget _consultarSeguimiento(int filas, ClassSeguimiento listaaa) {
+  /*  Widget _consultarSeguimiento(int filas, ClassSeguimiento listaaa) {
     return Container(
       child: HorizontalDataTable(
         leftHandSideColumnWidth: 100,
@@ -1160,6 +1163,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
           10, //MediaQuery.of(context).size.height,
     );
   }
+ */
 
   Widget _menuItemHint(String hint, IconData icon) {
     return Container(
@@ -1220,7 +1224,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     });
   }
 
-  _submitRo() async {
+  /*  _submitRo() async {
     try {
       numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
           ro, '${widget.solicitude.idsolicitud}');
@@ -1234,6 +1238,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       stateTextWithIcon = ButtonState.fail;
     }
   }
+ */
 
   List<Widget> _getTitleWidget() {
     return [
