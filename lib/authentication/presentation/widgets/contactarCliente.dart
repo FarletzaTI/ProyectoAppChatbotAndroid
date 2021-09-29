@@ -1074,67 +1074,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   ],
                 ),
                 //Registrar Cliente
-                ExpansionTile(
-                  title: Text("Registrar Cliente"),
-                  leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
-                ),
-                //CREAR RO
-                ExpansionTile(
-                  title: Text("Crear Ro"),
-                  leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
-                  children: [
-                    Text("Ro asignado: $numerodeRo "),
-                    CustomTextForm(
-                      controller: _roController,
-                      changed: (value) => {ro = value},
-                      function: (input) => {ro = input},
-                      hintText: 'Ingrese el numero Ro',
-                      prefixIcon: MdiIcons.noteTextOutline,
-                      keyboardType: TextInputType.number,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: MaterialButton(
-                            onPressed: () {
-                              setState(() {
-                                _submitRo();
-                                updateControlTareas('9',
-                                    '${widget.solicitude.idsolicitud}', "P");
-                              });
-                            },
-                            child: Text("Actualizar Ro"),
-                            color: Colors.blue,
-                            textColor: Colors.white,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                          width: 20.0,
-                        ),
-                        Visibility(
-                            visible: _solicitudeModel.opcFinalizar,
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  isEnable2 = false;
-                                  btnFinalizarCierre = false;
-                                });
-                                updateControlTareas('9',
-                                    '${widget.solicitude.idsolicitud}', "F");
-                                _solicitudeModel = _solicitudeModel.copyWith(
-                                    opcFinalizar: false);
-                                contactProvider.setSolicitude(_solicitudeModel);
-                              },
-                              child: Text("Finalizar"),
-                              color: Colors.blue,
-                              textColor: Colors.white,
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
