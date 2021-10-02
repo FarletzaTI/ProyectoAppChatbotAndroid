@@ -24,83 +24,99 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
   String ro = "";
   bool btnFinalizarCierre = true;
   bool isEnable2 = true;
+  final focusNode = FocusNode();
+
+  Future<bool> _onBackPressed() {
+    focusNode.unfocus();
+    //FocusScope.of(context).unfocus();
+    Navigator.of(context).pop(true);
+    return Future.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Registro"),
-      ),
-      body: SafeArea(
-        child: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                //Registrar Cliente
-                ExpansionTile(
-                  title: Text("Registrar Cliente"),
-                  leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
-                ),
-//CREAR RO
-                ExpansionTile(
-                  title: Text("Crear Ro"),
-                  leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
-                  children: [
-                    Text("Ro asignado: $numerodeRo "),
-                    CustomTextForm(
-                      controller: _roController,
-                      changed: (value) => {ro = value},
-                      function: (input) => {ro = input},
-                      hintText: 'Ingrese el numero Ro',
-                      prefixIcon: MdiIcons.noteTextOutline,
-                      keyboardType: TextInputType.number,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: MaterialButton(
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Registro"),
+        ),
+        body: SafeArea(
+          child: Container(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  //Registrar Cliente
+                  ExpansionTile(
+                    title: Text("Registrar Cliente"),
+                    leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
+                  ),
+                  //CREAR RO
+                  ExpansionTile(
+                    title: Text("Crear Ro"),
+                    leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
+                    children: [
+                      Text("Ro asignado: $numerodeRo "),
+                      CustomTextForm(
+                        controller: _roController,
+                        focusNode: focusNode,
+                        changed: (value) => {ro = value},
+                        function: (input) => {ro = input},
+                        hintText: 'Ingrese el Ro',
+                        prefixIcon: MdiIcons.noteTextOutline,
+                        keyboardType: TextInputType.number,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          /* Container(
+                            child: MaterialButton(
+                              onPressed: () {
+                                setState(() {
+                                  _submitRo();
+                                  /*     updateControlTareas('9',
+                                      '${widget.solicitude.idsolicitud}', "P");
+                                */
+                                });
+                              },
+                              child: Text("Actualizar Ro"),
+                              color: Colors.blue,
+                              textColor: Colors.white,
+                            ),
+                          ), */
+                          SizedBox(
+                            height: 20,
+                            width: 20.0,
+                          ),
+                          Visibility(
+                              //   visible: _solicitudeModel.opcFinalizar,
+                              child: MaterialButton(
                             onPressed: () {
                               setState(() {
-                                _submitRo();
-                                /*     updateControlTareas('9',
-                                    '${widget.solicitude.idsolicitud}', "P");
-                              */
+                                isEnable2 = false;
+                                btnFinalizarCierre = false;
                               });
+                              _submitRo();
+                              updateControlTareas(
+                                  '9', '${widget.solicitude.idsolicitud}', "F");
+
+                              /*   updateControlTareas('9',
+                                      '${widget.solicitude.idsolicitud}', "F");
+                                  _solicitudeModel = _solicitudeModel.copyWith(
+                                      opcFinalizar: false);
+                                  contactProvider.setSolicitude(_solicitudeModel);
+                                */
                             },
-                            child: Text("Actualizar Ro"),
+                            child: Text("Finalizar"),
                             color: Colors.blue,
                             textColor: Colors.white,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                          width: 20.0,
-                        ),
-                        Visibility(
-                            //   visible: _solicitudeModel.opcFinalizar,
-                            child: MaterialButton(
-                          onPressed: () {
-                            setState(() {
-                              isEnable2 = false;
-                              btnFinalizarCierre = false;
-                            });
-                            /*   updateControlTareas('9',
-                                    '${widget.solicitude.idsolicitud}', "F");
-                                _solicitudeModel = _solicitudeModel.copyWith(
-                                    opcFinalizar: false);
-                                contactProvider.setSolicitude(_solicitudeModel);
-                              */
-                          },
-                          child: Text("Finalizar"),
-                          color: Colors.blue,
-                          textColor: Colors.white,
-                        )),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                          )),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -117,11 +133,11 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
 
   _submitRo() async {
     try {
-      /*     numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
+      numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
           ro, '${widget.solicitude.idsolicitud}');
-      _solicitudeModel = _solicitudeModel.copyWith(numRo: _roController.text);
-      contactProvider.setSolicitude(_solicitudeModel);
- */
+      /*  _solicitudeModel = _solicitudeModel.copyWith(numRo: _roController.text);
+      contactProvider.setSolicitude(_solicitudeModel); */
+
       setState(() {
         stateTextWithIcon = ButtonState.success;
       });

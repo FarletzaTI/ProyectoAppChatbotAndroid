@@ -12,35 +12,38 @@ class CustomTextForm extends StatelessWidget {
   final VoidCallback onPressed;
   final TextEditingController controller;
   final Function(String) validator;
-  final bool obscure  ; 
+  final bool obscure;
+  final FocusNode focusNode;
 
   const CustomTextForm(
       {this.hintText = "",
-      this.controller = null,
+      this.controller,
       this.onPressed,
       this.prefixIcon,
       this.keyboardType,
       this.function,
       this.changed,
-      this.obscure = false, this.validator,
-       });
+      this.obscure = false,
+      this.validator,
+      this.focusNode});
   @override
   Widget build(BuildContext context) {
-    return TextFormField(  
+    return TextFormField(
       validator: validator,
       obscureText: obscure,
       controller: controller,
-      focusNode: FocusNode(canRequestFocus: false),
+      focusNode:
+          focusNode == null ? FocusNode(canRequestFocus: false) : focusNode,
       onTap: onPressed,
       onChanged: (input) => changed(input),
       onSaved: (input) => function(input),
       style: TextStyle(
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.2,
-          color: primaryColor),
+          fontWeight: FontWeight.w500, letterSpacing: 0.2, color: primaryColor),
       decoration: InputDecoration(
-        suffixIcon: Icon(MdiIcons.exclamation,color: Colors.white,),     
-       
+        suffixIcon: Icon(
+          MdiIcons.exclamation,
+          color: Colors.white,
+        ),
         prefixIcon: Icon(prefixIcon),
         hintStyle: TextStyle(
             fontWeight: FontWeight.w500,
@@ -49,13 +52,12 @@ class CustomTextForm extends StatelessWidget {
         hintText: hintText,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,        
+        focusedBorder: InputBorder.none,
         isDense: true,
         contentPadding: EdgeInsets.all(16),
       ),
       autofocus: false,
       keyboardType: keyboardType,
-
     );
   }
 }

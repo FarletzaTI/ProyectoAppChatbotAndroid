@@ -460,6 +460,10 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   )
                                 ];
                               }
+
+                              emailContactoAgente = "";
+                              nombreAgenteSele = "";
+                              telfContactoAgente = "";
                               return Container(
                                 child: Column(
                                   children: children,
@@ -467,176 +471,200 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                               );
                             }),
                       ),
-                      FutureBuilder(
-                          future: NetworkHelper.attemptContactoAgente(
-                              agenteSelected),
-                          builder: (context,
-                              AsyncSnapshot<ContactosSegunAgente> snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.none:
-                              case ConnectionState.waiting:
-                                return Center(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CircularProgressIndicator(),
-                                        Text("Cargando Agentes")
-                                      ],
-                                    ),
-                                  ),
-                                );
-
-                              default:
-                                if (snapshot.hasError)
-                                  return Container(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.error),
-                                          SizedBox(
-                                            height: 20.0,
-                                          ),
-                                          Text(
-                                              "No se pudo cargar los datos, por favor intente mas tarde.")
-                                        ],
-                                      ));
-                                else {
-                                  if (!snapshot.hasData)
-                                    return Container(
-                                        alignment: Alignment.center,
+                      agenteSelected != null && agenteSelected.length > 0
+                          ? FutureBuilder(
+                              future: NetworkHelper.attemptContactoAgente(
+                                  agenteSelected),
+                              builder: (context,
+                                  AsyncSnapshot<ContactosSegunAgente>
+                                      snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                  case ConnectionState.waiting:
+                                    return Center(
+                                      child: Container(
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Icon(Icons.error),
-                                            SizedBox(
-                                              height: 20.0,
-                                            ),
-                                            Text(
-                                                "No se pudo cargar los datos, por favor intente mas tarde.")
+                                            CircularProgressIndicator(),
+                                            Text("Cargando Agentes")
                                           ],
-                                        ));
-                                }
-                                return Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      .2, //200,
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount:
-                                          snapshot.data.contactosAgente.length,
-                                      itemBuilder:
-                                          (BuildContext context, index) {
-                                        final contactosClientes = snapshot
-                                            .data.contactosAgente[index];
-                                        return Container(
+                                        ),
+                                      ),
+                                    );
+
+                                  default:
+                                    if (snapshot.hasError)
+                                      return Container(
+                                          alignment: Alignment.center,
                                           child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
-                                              ListTile(
-                                                title: Text(
-                                                    contactosClientes.nombre),
-                                                subtitle: Text(
-                                                    "Tipo Carga: ${contactosClientes.tipoCarga}"),
-                                                leading: Icon(MdiIcons.account),
-                                                onTap: () {
-                                                  List<MediosdeContacto>
-                                                      listaEmail =
-                                                      contactosClientes
-                                                          .mediosdeContacto
-                                                          .where((element) =>
-                                                              element.codigo ==
-                                                              "E")
-                                                          .toList();
-                                                  nombreAgenteSele =
-                                                      contactosClientes.nombre
-                                                          .toString();
-                                                  List<MediosdeContacto>
-                                                      listaTelf =
-                                                      contactosClientes
-                                                          .mediosdeContacto
-                                                          .where((element) =>
-                                                              element.codigo ==
-                                                              "T")
-                                                          .toList();
-                                                  if (listaTelf.length >= 2 ||
-                                                      listaEmail.length >= 2) {
-                                                    showModalBottomSheet(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AgentContactModalPage(
-                                                          listaEmail:
-                                                              listaEmail,
-                                                          listaTelf: listaTelf,
-                                                          cambiarEmail:
-                                                              changeEmail,
-                                                          cambiarTelf:
-                                                              changeTelefono,
-                                                        );
-                                                      },
-                                                    );
-                                                  } else {
-                                                    if (listaEmail.length ==
-                                                        1) {
-                                                      setState(() {
-                                                        emailContactoAgente =
-                                                            listaEmail[0].valor;
-                                                      });
-                                                    }
-                                                    if (listaTelf.length == 1) {
-                                                      setState(() {
-                                                        telfContactoAgente =
-                                                            listaTelf[0].valor;
-                                                      });
-                                                    }
-                                                  }
-                                                },
+                                              Icon(Icons.error),
+                                              SizedBox(
+                                                height: 20.0,
                                               ),
-                                              Divider(),
+                                              Text(
+                                                  "No se pudo cargar los datos, por favor intente mas tarde.")
                                             ],
-                                          ),
-                                        );
-                                      }),
-                                );
-                            }
-                          }),
+                                          ));
+                                    else {
+                                      if (!snapshot.hasData)
+                                        return Container(
+                                            alignment: Alignment.center,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.error),
+                                                SizedBox(
+                                                  height: 20.0,
+                                                ),
+                                                Text(
+                                                    "No se pudo cargar los datos, por favor intente mas tarde.")
+                                              ],
+                                            ));
+                                    }
+                                    return Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              .2, //200,
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: snapshot
+                                              .data.contactosAgente.length,
+                                          itemBuilder:
+                                              (BuildContext context, index) {
+                                            final contactosClientes = snapshot
+                                                .data.contactosAgente[index];
+                                            return Container(
+                                              child: Column(
+                                                children: [
+                                                  ListTile(
+                                                    title: Text(
+                                                        contactosClientes
+                                                            .nombre),
+                                                    subtitle: Text(
+                                                        "Tipo Carga: ${contactosClientes.tipoCarga}"),
+                                                    leading:
+                                                        Icon(MdiIcons.account),
+                                                    onTap: () {
+                                                      List<MediosdeContacto>
+                                                          listaEmail =
+                                                          contactosClientes
+                                                              .mediosdeContacto
+                                                              .where((element) =>
+                                                                  element
+                                                                      .codigo ==
+                                                                  "E")
+                                                              .toList();
+                                                      nombreAgenteSele =
+                                                          contactosClientes
+                                                              .nombre
+                                                              .toString();
+                                                      List<MediosdeContacto>
+                                                          listaTelf =
+                                                          contactosClientes
+                                                              .mediosdeContacto
+                                                              .where((element) =>
+                                                                  element
+                                                                      .codigo ==
+                                                                  "T")
+                                                              .toList();
+                                                      if (listaTelf.length >=
+                                                              2 ||
+                                                          listaEmail.length >=
+                                                              2) {
+                                                        showModalBottomSheet(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AgentContactModalPage(
+                                                              listaEmail:
+                                                                  listaEmail,
+                                                              listaTelf:
+                                                                  listaTelf,
+                                                              cambiarEmail:
+                                                                  changeEmail,
+                                                              cambiarTelf:
+                                                                  changeTelefono,
+                                                            );
+                                                          },
+                                                        );
+                                                      } else {
+                                                        if (listaEmail.length ==
+                                                            1) {
+                                                          setState(() {
+                                                            emailContactoAgente =
+                                                                listaEmail[0]
+                                                                    .valor;
+                                                          });
+                                                        }
+                                                        if (listaTelf.length ==
+                                                            1) {
+                                                          setState(() {
+                                                            telfContactoAgente =
+                                                                listaTelf[0]
+                                                                    .valor;
+                                                          });
+                                                        }
+                                                      }
+                                                    },
+                                                  ),
+                                                  Divider(),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                    );
+                                }
+                              })
+                          : Container(),
                       SizedBox(
                         height: 20,
                       ),
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Nombre : $nombreAgenteSele',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[TextSpan(text: "")],
-                        ),
-                      )),
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Telefono : ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(text: telfContactoAgente)
-                          ],
-                        ),
-                      )),
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Email : ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(text: "$emailContactoAgente")
-                          ],
-                        ),
-                      )),
+                      nombreAgenteSele.length > 0
+                          ? Container(
+                              child: RichText(
+                              text: TextSpan(
+                                text: 'Nombre : $nombreAgenteSele',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: <TextSpan>[TextSpan(text: "")],
+                              ),
+                            ))
+                          : Container(),
+                      telfContactoAgente.length > 0
+                          ? Container(
+                              child: RichText(
+                              text: TextSpan(
+                                text: 'Telefono : ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: <TextSpan>[
+                                  TextSpan(text: telfContactoAgente)
+                                ],
+                              ),
+                            ))
+                          : Container(),
+                      emailContactoAgente.length > 0
+                          ? Container(
+                              child: RichText(
+                              text: TextSpan(
+                                text: 'Email : ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                                children: <TextSpan>[
+                                  TextSpan(text: "$emailContactoAgente")
+                                ],
+                              ),
+                            ))
+                          : Container(),
                       Container(
                         height: 75,
                         width: MediaQuery.of(context).size.width - 70,
