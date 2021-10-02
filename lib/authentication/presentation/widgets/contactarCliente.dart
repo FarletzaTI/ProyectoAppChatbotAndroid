@@ -48,7 +48,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   bool btnSubirArchivos2 = false;
   bool btnSubirArchivos3 = false;
   bool btnSubirArchivosCot = false;
-  //DateTime _currentDate = DateTime(2019, 2, 3);
 
   bool btnFinalizarCierre = true;
   bool btnNextInfoEmb = true;
@@ -71,13 +70,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String emailContactoAgente = '';
   String telfContactoAgente = '';
   String nombreContactoAg = "";
-/*   String ro = "";
-  String numerodeRo = ''; */
   String nombreAgenteSele = '';
   FilePickerResult result;
   FilePickerResult result1;
-/*   DateTime fecha = DateTime.now();
-  DateTime fechahasta = DateTime.now(); */
 
   void changeEmail(String email) {
     setState(() {
@@ -108,16 +103,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     String nombrePais = '';
     listaDropDownAgentes = [];
     bool isEnable = true;
-    /*   int index = 0;
-    String estado = "";
-   
-    bool isEnable2 = true; */
-
-    /*    int day = new DateTime.now().day;
-    int mes = new DateTime.now().month;
-    int anyo = new DateTime.now().year;
-
-    String currentDate = "$day/$mes/$anyo"; */
 
     if (lineaNg == 'E')
       nombrePais = widget.solicitude.paisDestino;
@@ -967,7 +952,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                     return Container(
                                       child: HorizontalDataTable(
                                         leftHandSideColumnWidth: 100,
-                                        rightHandSideColumnWidth: 600,
+                                        rightHandSideColumnWidth: 370,
                                         isFixedHeader: true,
                                         headerWidgets: _getTitleWidget(),
                                         leftSideItemBuilder:
@@ -982,8 +967,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                         ),
                                       ),
                                       height:
-                                          MediaQuery.of(context).size.height -
-                                              7,
+                                          MediaQuery.of(context).size.height /
+                                              2,
                                       // MediaQuery.of(context).size.height,
                                     );
                                   }
@@ -1143,28 +1128,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return registroafectado;
   }
 
-  /*  Widget _consultarSeguimiento(int filas, ClassSeguimiento listaaa) {
-    return Container(
-      child: HorizontalDataTable(
-        leftHandSideColumnWidth: 100,
-        rightHandSideColumnWidth: 100,
-        isFixedHeader: true,
-        headerWidgets: _getTitleWidget(),
-        leftSideItemBuilder: _generateFirstColumnRow,
-        rightSideItemBuilder: _generateRightHandSideColumnRow,
-        itemCount: filas,
-        rowSeparatorWidget: const Divider(
-          color: Colors.blue,
-          height: 1.0,
-          thickness: 0.0,
-        ),
-      ),
-      height: MediaQuery.of(context).size.height -
-          10, //MediaQuery.of(context).size.height,
-    );
-  }
- */
-
   Widget _menuItemHint(String hint, IconData icon) {
     return Container(
       margin: EdgeInsets.only(top: 15, bottom: 15),
@@ -1246,7 +1209,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
         'N°',
         30,
       ),
-      _getTitleItemWidget('Tarea', 100),
+      _getTitleItemWidget('Tarea', 124),
       _getTitleItemWidget('Estado', 100),
       _getTitleItemWidget('Fecha Ingreso', 140),
     ];
@@ -1277,10 +1240,10 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       children: <Widget>[
         Container(
           child: Text('${listasoli[index].tarea}'), //tarea
-          width: 100,
+          width: 124,
           height: 40,
           padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-          alignment: Alignment.center,
+          alignment: Alignment.centerLeft,
         ),
         Container(
           child: Row(

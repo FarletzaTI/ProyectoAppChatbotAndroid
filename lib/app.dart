@@ -164,7 +164,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // _cargarOpciones();
     _loadView();
     _dropdownMenuItems = Week.buildDropdownMenuItems();
     _dropdownMenuItems2 = ConEmbarque.buildDropdownMenuItems();
@@ -230,7 +229,6 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  //_formKey.currentState.reset();
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -384,8 +382,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-
-                  //Data dynami, of OptionModels, in future change with providers
                   isLoadView
                       ? Container(
                           child: Center(
@@ -405,7 +401,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: _viewApp,
                           ),
                         ),
-
                   Divider(
                     height: 1,
                     thickness: 1,
@@ -442,7 +437,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-//_appBarPersonalizado("Instruccion de Embarque")
   Widget _buildForm() {
     return Stack(children: [
       Column(

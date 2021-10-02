@@ -166,7 +166,6 @@ class NetworkHelper {
     if (res.statusCode != 200) return agentes;
     if (res.statusCode == 200) {
       Map<String, dynamic> consult = jsonDecode(res.body);
-      //if (consult.containsKey("ListaMotivos")) {
       try {
         agentes = List<ListaAgentes>.from(
             consult["ListaAgentes"].map((x) => ListaAgentes.fromJson(x)));
@@ -174,8 +173,6 @@ class NetworkHelper {
         print(e.toString());
       }
       return agentes;
-      // } else
-      //  return agentes;
     }
   }
 
@@ -199,11 +196,7 @@ class NetworkHelper {
       try {
         listasoli = List<Listasoli>.from(
             consult["Listasoli"].map((x) => Listasoli.fromJson(x)));
-
-        //List<ClassSeguimiento>.from(consult["Listasoli"].map((x) => ClassSeguimiento.fromJson(x)));
-      } on Exception catch (e) {
-        // print(e.toString());
-      }
+      } on Exception catch (e) {}
       return listasoli;
     }
   }
