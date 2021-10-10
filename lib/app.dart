@@ -20,6 +20,7 @@ import 'authentication/domain/entities/view_app.dart';
 import 'authentication/domain/repositories/authentication_repository.dart';
 import 'authentication/domain/repositories/user_repository.dart';
 import 'authentication/presentation/bloc/authentication/authentication_bloc.dart';
+import 'authentication/presentation/pages/basc_page.dart';
 import 'authentication/presentation/pages/login_page.dart';
 import 'authentication/presentation/pages/splash_page.dart';
 import 'const/gradient.dart';
@@ -891,10 +892,10 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Icon(MdiIcons.earth),
           title: Text(opcionesModel.descripcion),
           onTap: () {
-            /*  MaterialPageRoute route;
+            MaterialPageRoute route;
             route = MaterialPageRoute(
-                builder: (BuildContext context) => ChatBotPage());
-            Navigator.push(context, route); */
+                builder: (BuildContext context) => opcBascPages());
+            Navigator.push(context, route);
           },
         ));
       }

@@ -25,6 +25,8 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
   bool btnFinalizarCierre = true;
   bool isEnable2 = true;
   final focusNode = FocusNode();
+  bool isChecked = false;
+  String _value = "";
 
   Future<bool> _onBackPressed() {
     focusNode.unfocus();
@@ -50,6 +52,48 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                   ExpansionTile(
                     title: Text("Registrar Cliente"),
                     leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                      value: isChecked,
+                                      activeColor: Colors.green,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isChecked = value;
+                                          if (value) {
+                                            Container(
+                                              child: CustomTextForm(
+                                                function: (input) =>
+                                                    {_value = input},
+                                                changed: (value) =>
+                                                    {_value = value},
+                                                hintText:
+                                                    'Ingrese el Ruc del cliente',
+                                                prefixIcon: MdiIcons.textBox,
+                                                keyboardType:
+                                                    TextInputType.text,
+                                              ),
+                                            );
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    Text("Registro Cliente"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   //CREAR RO
                   ExpansionTile(

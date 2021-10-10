@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:app_prueba/authentication/domain/entities/seguimiento.dart';
+import 'package:app_prueba/models/EntidadesBASC/entidadFuncionJudicial.dart';
 import 'package:app_prueba/models/seguimiento.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
@@ -684,6 +685,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                           children: [
                             IconButton(
                                 onPressed: () {
+                                  print(telfContactoAgente);
                                   launch("tel://$telfContactoAgente");
                                   updateControlTareas('4',
                                       '${widget.solicitude.idsolicitud}', "P");
@@ -917,7 +919,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   ),
                 ),
                 //Seguimiento
-
                 ExpansionTile(
                     title: Text("Seguimiento"),
                     leading: Icon(MdiIcons.clipboardSearch, color: Colors.blue),

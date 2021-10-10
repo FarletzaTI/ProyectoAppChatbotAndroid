@@ -1,7 +1,9 @@
 //@dart=2.9
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_prueba/models/EntidadesBASC/entidadFuncionJudicial.dart';
 import 'package:app_prueba/models/agentes.dart';
+import 'package:app_prueba/models/consultaMovimientos.dart';
 import 'package:app_prueba/models/contactosagentes.dart';
 import 'package:app_prueba/models/motivosrechazo.dart';
 import 'package:app_prueba/models/seguimiento.dart';
@@ -21,6 +23,7 @@ import 'dart:async';
 const SERVER_IP =
     'http://181.198.116.210:9187/cotizadorWebAPI/api'; //Preproduccion
 
+const SERVER_IP_VALIDA = "http://192.168.168.23:8327/appValidacionPersonas";
 //const SERVER_IP = 'http://192.168.168.23:8380/CotizadorWebApi/api'; //local
 
 class NetworkHelper {
@@ -52,7 +55,6 @@ class NetworkHelper {
               SolicitudeModel(idsolicitud: solicitude.idsolicitud));
           return solicitude;
         }));
-        //Guardar en memoria - contactProvider.solicitudeModelList;  //setString (valor - llave (IdUSUSARI))
         return solicitudes;
       } else
         return solicitudes;
@@ -201,6 +203,65 @@ class NetworkHelper {
     }
   }
 
+  //llamada al API DE LISTA_CLINTON
+  static Future<List<RespuestaConsulta>> attemptConsultaListCLinton(
+      String numRuc, String nombresocial) async {
+    List<RespuestaConsulta> datosListClinton = [];
+    var res = await http.post(
+      "$SERVER_IP_VALIDA/api/api/validarPersonaLC",
+      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
+    );
+    if (res.statusCode != 200) return datosListClinton;
+    if (res.statusCode == 200) {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      try {
+        datosListClinton = List<RespuestaConsulta>.from(
+            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+      } on Exception catch (e) {}
+      return datosListClinton;
+    }
+  }
+
+  //llamada al API DE SRI
+  static Future<List<RespuestaConsulta>> attemptConsultaSRI(
+      String numRuc, String nombresocial) async {
+    List<RespuestaConsulta> datosRI = [];
+    print("$SERVER_IP_VALIDA/api/validarPersonaSRI");
+    var res = await http.post(
+      "$SERVER_IP_VALIDA/api/validarPersonaSRI",
+      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
+    );
+
+    if (res.statusCode != 200) return datosRI;
+    if (res.statusCode == 200) {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      try {
+        datosRI = List<RespuestaConsulta>.from(
+            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+      } on Exception catch (e) {}
+      return datosRI;
+    }
+  }
+
+  //llamada al API DE FUNCION_JUDICIAL
+  static Future<List<RespuestaConsulta>> attemptConsultaFuncionJudicial(
+      String numRuc, String nombresocial) async {
+    List<RespuestaConsulta> datosFJ = [];
+    var res = await http.post(
+      "$SERVER_IP_VALIDA/api/validarPersonaFJ",
+      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
+    );
+    if (res.statusCode != 200) return datosFJ;
+    if (res.statusCode == 200) {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      try {
+        datosFJ = List<RespuestaConsulta>.from(
+            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+      } on Exception catch (e) {}
+      return datosFJ;
+    }
+  }
+
 //llama al API de contactos de un Agente
   static Future<ContactosSegunAgente> attemptContactoAgente(
       String idagente) async {
@@ -346,5 +407,76 @@ class NetworkHelper {
     );
     if (res.statusCode != 200) throw Exception();
     if (res.statusCode == 200) return res.body;
+  }
+
+//Api para guardar los movimientos realizados por el usuario
+  static Future<String> attempGuardarMovimientos(
+      String idsolicitud,
+      String idTarea,
+      String paso,
+      String idagente,
+      String nombagente,
+      String idContactAg,
+      String nombContactAg,
+      String telContactAg,
+      String emailContactAg,
+      String estado,
+      String idmotivo,
+      String observacion,
+      String numruc,
+      String numRo) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString("token");
+
+    var res = await http.post(
+      "$SERVER_IP/solicitudes/guardarMovimientos",
+      body: {
+        "IDSOLICITUD": idsolicitud,
+        "METODO": idTarea,
+        "PASO": paso,
+        "IDAGENTE": idagente,
+        "NOMBREAG": nombagente,
+        "IDCONTACTOAG": idContactAg,
+        "NOMBRECTCAG": nombContactAg,
+        "TELEFONOCTAG": telContactAg,
+        "EMAILCTAG": emailContactAg,
+        "ESTADO": estado,
+        "IDMOTIVO": idmotivo,
+        "OBSERVACION": observacion,
+        "RUC": numruc,
+        "NUM_RO": numRo
+      },
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+    if (res.statusCode != 200)
+      throw Exception(
+          "error en el proceso de ingreso/update de movimientosApp");
+    if (res.statusCode == 200) return res.body;
+  }
+
+  //Api para consultar los movimientos realizados por el usuario
+  static Future<EntidadMov> attemptConsultMovimientos(
+      String idsolicitud, BuildContext context) async {
+    EntidadMov registro;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString("token");
+    var res = await http.post(
+      "$SERVER_IP/solicitudes/ConsultaMovimientosGuardados",
+      body: {"Idsoliciud": idsolicitud},
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (res.statusCode != 200)
+      return registro;
+    else {
+      Map<String, dynamic> consult = jsonDecode(res.body);
+      EntidadMov registro = EntidadMov.fromJson(consult);
+      return registro;
+    }
   }
 }
