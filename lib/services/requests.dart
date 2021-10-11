@@ -412,7 +412,7 @@ class NetworkHelper {
 //Api para guardar los movimientos realizados por el usuario
   static Future<String> attempGuardarMovimientos(
       String idsolicitud,
-      String idTarea,
+      String metodo,
       String paso,
       String idagente,
       String nombagente,
@@ -432,7 +432,7 @@ class NetworkHelper {
       "$SERVER_IP/solicitudes/guardarMovimientos",
       body: {
         "IDSOLICITUD": idsolicitud,
-        "METODO": idTarea,
+        "METODO": metodo,
         "PASO": paso,
         "IDAGENTE": idagente,
         "NOMBREAG": nombagente,
