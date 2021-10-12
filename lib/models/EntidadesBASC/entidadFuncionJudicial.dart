@@ -1,23 +1,36 @@
-// @dart=2.9
+// To parse this JSON data, do
+//
+//     final respuestaConsulta = respuestaConsultaFromJson(jsonString);
+
+import 'dart:convert';
+
+RespuestaConsulta respuestaConsultaFromJson(String str) =>
+    RespuestaConsulta.fromJson(json.decode(str));
+
+String respuestaConsultaToJson(RespuestaConsulta data) =>
+    json.encode(data.toJson());
+
 class RespuestaConsulta {
-  String entidadConsutada;
+  RespuestaConsulta({
+    this.entidadConsutada,
+    this.resultadoValidacion = false,
+    this.listaMensajes = const [],
+  });
+
+  String? entidadConsutada;
   bool resultadoValidacion;
   List<String> listaMensajes;
 
-  RespuestaConsulta(
-      {this.entidadConsutada, this.resultadoValidacion, this.listaMensajes});
+  factory RespuestaConsulta.fromJson(Map<String, dynamic> json) =>
+      RespuestaConsulta(
+        entidadConsutada: json["entidadConsutada"],
+        resultadoValidacion: json["resultadoValidacion"],
+        listaMensajes: List<String>.from(json["listaMensajes"].map((x) => x)),
+      );
 
-  RespuestaConsulta.fromJson(Map<String, dynamic> json) {
-    entidadConsutada = json['entidadConsutada'];
-    resultadoValidacion = json['resultadoValidacion'];
-    listaMensajes = json['listaMensajes'].cast<String>();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['entidadConsutada'] = this.entidadConsutada;
-    data['resultadoValidacion'] = this.resultadoValidacion;
-    data['listaMensajes'] = this.listaMensajes;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "entidadConsutada": entidadConsutada,
+        "resultadoValidacion": resultadoValidacion,
+        "listaMensajes": List<dynamic>.from(listaMensajes.map((x) => x)),
+      };
 }

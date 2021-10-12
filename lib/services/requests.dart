@@ -123,7 +123,7 @@ class NetworkHelper {
       if (res.statusCode != 200) throw Exception("vistas no encontradas");
       if (res.statusCode == 200) return res.body;
     } on Exception catch (e) {
-      print(e.toString());
+      //  print(e.toString());
     }
   }
 
@@ -204,59 +204,57 @@ class NetworkHelper {
   }
 
   //llamada al API DE LISTA_CLINTON
-  static Future<List<RespuestaConsulta>> attemptConsultaListCLinton(
+  static Future<RespuestaConsulta> attemptConsultaListCLinton(
       String numRuc, String nombresocial) async {
-    List<RespuestaConsulta> datosListClinton = [];
-    var res = await http.post(
-      "$SERVER_IP_VALIDA/api/api/validarPersonaLC",
+    RespuestaConsulta datosListClinton;
+    var reslc = await http.post(
+      "$SERVER_IP_VALIDA/api/validarPersonaLC",
       body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
     );
-    if (res.statusCode != 200) return datosListClinton;
-    if (res.statusCode == 200) {
-      Map<String, dynamic> consult = jsonDecode(res.body);
+    print("$SERVER_IP_VALIDA/api/api/validarPersonaLC");
+
+    if (reslc.statusCode != 200) return datosListClinton;
+    if (reslc.statusCode == 200) {
       try {
-        datosListClinton = List<RespuestaConsulta>.from(
-            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+        datosListClinton = respuestaConsultaFromJson(reslc.body);
       } on Exception catch (e) {}
       return datosListClinton;
     }
   }
 
   //llamada al API DE SRI
-  static Future<List<RespuestaConsulta>> attemptConsultaSRI(
+  static Future<RespuestaConsulta> attemptConsultaSRI(
       String numRuc, String nombresocial) async {
-    List<RespuestaConsulta> datosRI = [];
-    print("$SERVER_IP_VALIDA/api/validarPersonaSRI");
+    RespuestaConsulta datosRI;
+    if (nombresocial == null) nombresocial = "";
     var res = await http.post(
       "$SERVER_IP_VALIDA/api/validarPersonaSRI",
       body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
     );
-
+    // print(res.body);
     if (res.statusCode != 200) return datosRI;
     if (res.statusCode == 200) {
-      Map<String, dynamic> consult = jsonDecode(res.body);
       try {
-        datosRI = List<RespuestaConsulta>.from(
-            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+        datosRI = respuestaConsultaFromJson(res.body);
       } on Exception catch (e) {}
       return datosRI;
     }
   }
 
   //llamada al API DE FUNCION_JUDICIAL
-  static Future<List<RespuestaConsulta>> attemptConsultaFuncionJudicial(
-      String numRuc, String nombresocial) async {
-    List<RespuestaConsulta> datosFJ = [];
-    var res = await http.post(
+  static Future<RespuestaConsulta> attemptConsultaFuncionJudicial(
+      String ruc, String nombre) async {
+    RespuestaConsulta datosFJ;
+    //nombre = "FARLETZA";
+    var respesta = await http.post(
       "$SERVER_IP_VALIDA/api/validarPersonaFJ",
-      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
+      body: {"numeroIdentificacion": ruc, "nombreRazonSocial": nombre},
     );
-    if (res.statusCode != 200) return datosFJ;
-    if (res.statusCode == 200) {
-      Map<String, dynamic> consult = jsonDecode(res.body);
+    //print(respesta.body);
+    if (respesta.statusCode != 200) return datosFJ;
+    if (respesta.statusCode == 200) {
       try {
-        datosFJ = List<RespuestaConsulta>.from(
-            consult["listaMensajes"].map((x) => RespuestaConsulta.fromJson(x)));
+        datosFJ = respuestaConsultaFromJson(respesta.body);
       } on Exception catch (e) {}
       return datosFJ;
     }

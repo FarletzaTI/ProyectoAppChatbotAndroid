@@ -34,7 +34,7 @@ class _ConsultaAPIBascPageState extends State<consultaAPIBascPage> {
                 future: NetworkHelper.attemptConsultaSRI(numRuc, nombresocial),
                 // ignore: missing_return
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<RespuestaConsulta>> snapshot) {}),
+                    AsyncSnapshot<RespuestaConsulta> snapshot) {}),
           )
         ]);
     /* Container(

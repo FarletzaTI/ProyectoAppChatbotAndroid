@@ -28,9 +28,22 @@ class _BascPagestate extends State<opcBascPages> {
   bool v_resultado = false;
   final myControllerRUC = TextEditingController();
   final myControllerNameSocial = TextEditingController();
-  bool resultadoValidacion = false;
 
-  List<RespuestaConsulta> resp_ConsSRI = [];
+  bool resultadoValidacionSRI = true;
+  String mostrarTextoSRI = "";
+
+  bool resultadoValidacionLC = true;
+  String mostrarTextoLC = "";
+
+  bool resultadoValidacionFJ = false;
+  String mostrarTextoFJ = "";
+  bool finishSRI = false;
+  bool finishFJ = false;
+  bool finishLC = false;
+
+  RespuestaConsulta resp_ConsSRI;
+  RespuestaConsulta resp_ConsFJ;
+  RespuestaConsulta resp_ConsLC;
 
   @override
   void initState() {
@@ -95,8 +108,13 @@ class _BascPagestate extends State<opcBascPages> {
                               setState(() {
                                 v_resultado = true;
                               });
+                              consultaListaClinton(myControllerRUC.text,
+                                  myControllerNameSocial.text);
+                              consultafuncionJudicial(myControllerRUC.text,
+                                  myControllerNameSocial.text);
                               consultasri(myControllerRUC.text,
                                   myControllerNameSocial.text);
+
                               /*  consultaAPIBascPage(
                                     myControllerRUC.text, myControllerNameSocial.text); */
                             },
@@ -111,6 +129,17 @@ class _BascPagestate extends State<opcBascPages> {
                             onPressed: () {
                               setState(() {
                                 v_resultado = false;
+                                myControllerRUC.text = "";
+                                myControllerNameSocial.text = "";
+                                resultadoValidacionSRI = true;
+                                mostrarTextoSRI = "";
+                                resultadoValidacionLC = false;
+                                mostrarTextoLC = "";
+                                resultadoValidacionFJ = false;
+                                mostrarTextoFJ = "";
+                                finishFJ = false;
+                                finishLC = false;
+                                finishSRI = false;
                               });
                             },
                             child: Text('Limpiar'),
@@ -122,91 +151,216 @@ class _BascPagestate extends State<opcBascPages> {
                   SizedBox(
                     height: 20,
                   ),
+
+                  //CONSULTA DE OFAC SDN LIST
                   if (v_resultado == true)
-                    ExpansionTileCard(
-                      baseColor: Colors.green[50],
-                      expandedColor: Colors.red[50],
-                      trailing: (resultadoValidacion == true)
-                          ? LiteRollingSwitch(
-                              //initial value
-                              value: false,
-                              textOn: 'Disponible',
-                              //textOff: 'ocupado',
-                              colorOn: Colors.greenAccent[700],
-                              //colorOff: Colors.redAccent[700],
-                              iconOn: Icons.check,
-                              // iconOff: Icons.remove_circle_outline,
-                              textSize: 16.0,
-                              onChanged: (bool state) {},
-                            )
-                          : LiteRollingSwitch(
-                              //initial value
-                              value: true,
-                              //textOn: 'disponible',
-                              textOff: 'X',
-                              //colorOn: Colors.greenAccent[700],
-                              colorOff: Colors.redAccent[700],
-                              // iconOn: Icons.done,
-                              iconOff: Icons.flag,
-                              textSize: 16.0,
-                              onChanged: (bool state) {},
+                    if (finishLC == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionLC == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionLC == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: LiteRollingSwitch(
+                                    value: false,
+                                    textOn: "X",
+                                    colorOn: Colors.redAccent[700],
+                                    iconOn: Icons.flag,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("OFAC SDN LIST"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
                             ),
-                      /*  ? FSwitch(
-                              //true
-                              open: resultadoValidacion,
-                              onChanged: (v) {},
-                              closeChild: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: Colors.black,
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoLC,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
                               ),
-                              openChild: Icon(
-                                Icons.check,
-                                size: 20,
-                                color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando Lista OFAC SDN")
+                          ],
+                        ),
+                      ),
+
+                  //CONSULTA DEL SRI
+                  if (v_resultado == true)
+                    if (finishSRI == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionSRI == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionSRI == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: LiteRollingSwitch(
+                                    value: false,
+                                    textOn: "X",
+                                    colorOn: Colors.redAccent[700],
+                                    iconOn: Icons.flag,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("SRI"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoSRI,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
                               ),
-                              openColor: Colors.green,
-                            )
-                          : FSwitch(
-                              //false
-                              open: resultadoValidacion,
-                              onChanged: (v) {},
-                              closeChild: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: Colors.black,
-                              ), 
-                            ), */
-                      title: Text("Lista Clinton"),
-                      children: <Widget>[
-                        Divider(
-                          thickness: 1.0,
-                          height: 1.0,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 8.0,
                             ),
-                            child: Text(
-                              "Lista de Mensajes que devuelve el api " +
-                                  '\n' +
-                                  "Lista de Mensajes que devuelve el api ",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  .copyWith(fontSize: 16),
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    )
-                  /* if (v_resultado == true)
-                         */
-                  else
-                    Container()
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando SRI")
+                          ],
+                        ),
+                      ),
+
+                  //CONSULTA DE FUNCION JUDICIAL
+                  if (v_resultado == true)
+                    if (finishFJ == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionFJ == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionFJ == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: LiteRollingSwitch(
+                                    value: false,
+                                    textOn: "X",
+                                    colorOn: Colors.redAccent[700],
+                                    iconOn: Icons.flag,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("FUNCION JUDICIAL"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoFJ,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando Funcion Judicial...")
+                          ],
+                        ),
+                      ),
                 ],
               ),
             ),
@@ -216,7 +370,48 @@ class _BascPagestate extends State<opcBascPages> {
     );
   }
 
-  Future<List<RespuestaConsulta>> consultasri(String ruc, String nombre) async {
+  Future<RespuestaConsulta> consultasri(String ruc, String nombre) async {
     resp_ConsSRI = await NetworkHelper.attemptConsultaSRI(ruc, nombre);
+
+    resp_ConsSRI.listaMensajes.forEach((String texto) {
+      setState(() {
+        mostrarTextoSRI = texto + '\n';
+      });
+    });
+    setState(() {
+      finishSRI = true;
+      resultadoValidacionSRI = resp_ConsSRI.resultadoValidacion;
+    });
+  }
+
+  Future<RespuestaConsulta> consultaListaClinton(
+      String ruc, String nombre) async {
+    resp_ConsLC = await NetworkHelper.attemptConsultaListCLinton(ruc, nombre);
+
+    resp_ConsLC.listaMensajes.forEach((String texto) {
+      setState(() {
+        mostrarTextoLC = mostrarTextoLC + " " + texto;
+      });
+    });
+    setState(() {
+      finishLC = true;
+      resultadoValidacionLC = resp_ConsLC.resultadoValidacion;
+    });
+  }
+
+  Future<RespuestaConsulta> consultafuncionJudicial(
+      String ruc, String nombre) async {
+    resp_ConsFJ =
+        await NetworkHelper.attemptConsultaFuncionJudicial(ruc, nombre);
+
+    resp_ConsFJ.listaMensajes.forEach((String texto) {
+      setState(() {
+        mostrarTextoFJ = texto + '\n';
+      });
+    });
+    setState(() {
+      finishFJ = true;
+      resultadoValidacionFJ = resp_ConsFJ.resultadoValidacion;
+    });
   }
 }
