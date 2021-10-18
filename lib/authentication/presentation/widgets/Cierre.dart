@@ -98,6 +98,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 child: DropdownButtonFormField(
                   value: _selectedMotivo,
                   items: listarechazo,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(),
+                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedMotivo = value;
@@ -105,6 +108,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   },
                   isDense: true,
                   isExpanded: true,
+                  dropdownColor: Colors.lightBlueAccent[100],
                   elevation: 15,
                 ),
               )

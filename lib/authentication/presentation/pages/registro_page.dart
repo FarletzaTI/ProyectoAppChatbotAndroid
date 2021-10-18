@@ -20,13 +20,16 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
   String registroafectado = "";
   ButtonState stateTextWithIcon = ButtonState.idle;
   final _roController = TextEditingController();
+  final _idclienteController = TextEditingController();
+
   String numerodeRo = '';
   String ro = "";
+  bool btnGrabarRuc = true;
+
   bool btnFinalizarCierre = true;
   bool isEnable2 = true;
   final focusNode = FocusNode();
   bool isChecked = false;
-  String _value = "";
 
   Future<bool> _onBackPressed() {
     focusNode.unfocus();
@@ -53,42 +56,80 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                     title: Text("Registrar Cliente"),
                     leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            child: Column(
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                      value: isChecked,
-                                      activeColor: Colors.green,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isChecked = value;
-                                          if (value) {
-                                            Container(
-                                              child: CustomTextForm(
-                                                function: (input) =>
-                                                    {_value = input},
-                                                changed: (value) =>
-                                                    {_value = value},
-                                                hintText:
-                                                    'Ingrese el Ruc del cliente',
-                                                prefixIcon: MdiIcons.textBox,
-                                                keyboardType:
-                                                    TextInputType.text,
-                                              ),
-                                            );
-                                          }
-                                        });
-                                      },
-                                    ),
-                                    Text("Registro Cliente"),
-                                  ],
+                                Checkbox(
+                                  value: isChecked,
+                                  activeColor: Colors.green,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isChecked = value;
+                                    });
+                                  },
                                 ),
+                                Text("Registro Cliente"),
                               ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      (isChecked)
+                          ? Container(
+                              padding: EdgeInsets.fromLTRB(15, 8, 15, 5),
+                              child: TextFormField(
+                                controller: _idclienteController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.blue, width: 2.0),
+                                  ),
+                                  labelText: "Identificacion del Cliente",
+                                  hintText:
+                                      "Ingrese el numero de identificacion creado",
+                                ),
+                              ),
+                            )
+                          : Container(),
+                      /*      (isChecked)
+                          ? */
+
+                      /*: Container(), */
+                      Row(
+                        children: [
+                          Visibility(
+                            visible: btnGrabarRuc,
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 150.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    guardarMovimientos(
+                                        '${widget.solicitude.idsolicitud}',
+                                        '',
+                                        '8',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        _idclienteController.text,
+                                        '');
+                                    setState(() {
+                                      btnGrabarRuc = false;
+                                    });
+                                  },
+                                  child: Text('Guardar'),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -100,7 +141,7 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                     title: Text("Crear Ro"),
                     leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
                     children: [
-                      Text("Ro asignado: $numerodeRo "),
+                      //  Text("Ro asignado: $numerodeRo "),
                       CustomTextForm(
                         controller: _roController,
                         focusNode: focusNode,
@@ -140,18 +181,26 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                                 isEnable2 = false;
                                 btnFinalizarCierre = false;
                               });
-                              _submitRo();
+                              // _submitRo();
                               updateControlTareas(
                                   '9', '${widget.solicitude.idsolicitud}', "F");
-
-                              /*   updateControlTareas('9',
-                                      '${widget.solicitude.idsolicitud}', "F");
-                                  _solicitudeModel = _solicitudeModel.copyWith(
-                                      opcFinalizar: false);
-                                  contactProvider.setSolicitude(_solicitudeModel);
-                                */
+                              guardarMovimientos(
+                                  '${widget.solicitude.idsolicitud}',
+                                  '',
+                                  '9',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  '',
+                                  _roController.text);
                             },
-                            child: Text("Finalizar"),
+                            child: Text("Grabar"),
                             color: Colors.blue,
                             textColor: Colors.white,
                           )),
@@ -175,7 +224,7 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
     return registroafectado;
   }
 
-  _submitRo() async {
+  /*  _submitRo() async {
     try {
       numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
           ro, '${widget.solicitude.idsolicitud}');
@@ -188,5 +237,38 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
     } catch (e) {
       stateTextWithIcon = ButtonState.fail;
     }
+  }
+ */
+  Future<String> guardarMovimientos(
+      String idsolicitud,
+      String metodo,
+      String paso,
+      String idagente,
+      String nombagente,
+      String idContactAg,
+      String nombContactAg,
+      String telContactAg,
+      String emailContactAg,
+      String estado,
+      String idmotivo,
+      String observacion,
+      String numruc,
+      String numRo) async {
+    registroafectado = await NetworkHelper.attempGuardarMovimientos(
+        idsolicitud,
+        metodo,
+        paso,
+        idagente,
+        nombagente,
+        idContactAg,
+        nombContactAg,
+        telContactAg,
+        emailContactAg,
+        estado,
+        idmotivo,
+        observacion,
+        numruc,
+        numRo);
+    return registroafectado;
   }
 }

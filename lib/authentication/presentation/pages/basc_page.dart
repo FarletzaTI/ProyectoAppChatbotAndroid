@@ -23,14 +23,14 @@ class opcBascPages extends StatefulWidget {
 
 class _BascPagestate extends State<opcBascPages> {
   int customerId = 0;
-  String _ruc = "";
-  String _razonsocial = "";
   bool v_resultado = false;
   final myControllerRUC = TextEditingController();
   final myControllerNameSocial = TextEditingController();
 
   bool resultadoValidacionSRI = true;
   String mostrarTextoSRI = "";
+
+  bool bloquear = false;
 
   bool resultadoValidacionLC = true;
   String mostrarTextoLC = "";
@@ -165,13 +165,16 @@ class _BascPagestate extends State<opcBascPages> {
                           trailing: (resultadoValidacionLC == false)
                               ? Padding(
                                   padding: const EdgeInsets.all(12.0),
-                                  child: LiteRollingSwitch(
-                                    value: false,
-                                    textOn: "X",
-                                    colorOn: Colors.redAccent[700],
-                                    iconOn: Icons.flag,
-                                    textSize: 16.0,
-                                    onChanged: (bool state) {},
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool valor) {},
+                                    ),
                                   ),
                                 )
                               : Padding(
@@ -183,7 +186,7 @@ class _BascPagestate extends State<opcBascPages> {
                                     colorOn: Colors.greenAccent[700],
                                     iconOn: Icons.check,
                                     textSize: 16.0,
-                                    onChanged: (bool state) {},
+                                    onChanged: (bool valor) {},
                                   ),
                                 ),
                           title: Text("OFAC SDN LIST"),
@@ -235,13 +238,16 @@ class _BascPagestate extends State<opcBascPages> {
                           trailing: (resultadoValidacionSRI == false)
                               ? Padding(
                                   padding: const EdgeInsets.all(12.0),
-                                  child: LiteRollingSwitch(
-                                    value: false,
-                                    textOn: "X",
-                                    colorOn: Colors.redAccent[700],
-                                    iconOn: Icons.flag,
-                                    textSize: 16.0,
-                                    onChanged: (bool state) {},
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool state) {},
+                                    ),
                                   ),
                                 )
                               : Padding(
@@ -305,13 +311,16 @@ class _BascPagestate extends State<opcBascPages> {
                           trailing: (resultadoValidacionFJ == false)
                               ? Padding(
                                   padding: const EdgeInsets.all(12.0),
-                                  child: LiteRollingSwitch(
-                                    value: false,
-                                    textOn: "X",
-                                    colorOn: Colors.redAccent[700],
-                                    iconOn: Icons.flag,
-                                    textSize: 16.0,
-                                    onChanged: (bool state) {},
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool state) {},
+                                    ),
                                   ),
                                 )
                               : Padding(
@@ -375,13 +384,14 @@ class _BascPagestate extends State<opcBascPages> {
 
     resp_ConsSRI.listaMensajes.forEach((String texto) {
       setState(() {
-        mostrarTextoSRI = texto + '\n';
+        mostrarTextoSRI = mostrarTextoSRI + '\n' + texto;
       });
     });
     setState(() {
       finishSRI = true;
       resultadoValidacionSRI = resp_ConsSRI.resultadoValidacion;
     });
+    return resp_ConsSRI;
   }
 
   Future<RespuestaConsulta> consultaListaClinton(
@@ -397,6 +407,7 @@ class _BascPagestate extends State<opcBascPages> {
       finishLC = true;
       resultadoValidacionLC = resp_ConsLC.resultadoValidacion;
     });
+    return resp_ConsLC;
   }
 
   Future<RespuestaConsulta> consultafuncionJudicial(
@@ -406,12 +417,13 @@ class _BascPagestate extends State<opcBascPages> {
 
     resp_ConsFJ.listaMensajes.forEach((String texto) {
       setState(() {
-        mostrarTextoFJ = texto + '\n';
+        mostrarTextoFJ = mostrarTextoFJ + '\n' + texto;
       });
     });
     setState(() {
       finishFJ = true;
       resultadoValidacionFJ = resp_ConsFJ.resultadoValidacion;
     });
+    return resp_ConsFJ;
   }
 }

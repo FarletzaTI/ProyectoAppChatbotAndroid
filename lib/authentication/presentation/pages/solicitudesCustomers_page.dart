@@ -40,7 +40,7 @@ class _solicitudesCustomerstate extends State<solicitudesCustomerPage> {
                 text: 'Pendientes',
               ),
               Tab(
-                text: 'Finalizades',
+                text: 'Finalizadas',
               ),
               Tab(
                 text: 'Todas',

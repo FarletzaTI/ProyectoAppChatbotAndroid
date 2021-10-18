@@ -386,8 +386,7 @@ class NetworkHelper {
     );
     if (res.statusCode == 200) return res.body;
 
-    if (res.statusCode != 200) //print(catalogos);
-      throw Exception();
+    if (res.statusCode != 200) throw Exception();
   }
 
   static Future<String> enviarInstruccion(

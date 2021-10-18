@@ -70,10 +70,10 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String fileName3 = "";
   String fileName4 = "";
   List<Adjunto> listaAdjunto = [];
-  String emailContactoAgente = '';
-  String telfContactoAgente = '';
+  String emailContactoAgente = "";
+  String telfContactoAgente = "";
   String nombreContactoAg = "";
-  String nombreAgenteSele = '';
+  String nombreAgenteSele = "";
   FilePickerResult result;
   FilePickerResult result1;
 
@@ -500,6 +500,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                     /*  if(objeto.isagente && value.nombreAggente == objeto.nombreAggente) {
 
                                           } else  */
+
                                     listaDropDownAgentes.add(DropdownMenuItem(
                                       child: _menuItem('${value.nombreAggente}',
                                           MdiIcons.ferry),
@@ -538,9 +539,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                   ];
                                 }
 
-                                emailContactoAgente = "";
+                                /*    emailContactoAgente = "";
                                 nombreAgenteSele = "";
-                                telfContactoAgente = "";
+                                telfContactoAgente = ""; */
                                 return Container(
                                   child: Column(
                                     children: children,
@@ -637,6 +638,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                                                         .codigo ==
                                                                     "E")
                                                                 .toList();
+
                                                         nombreAgenteSele =
                                                             contactosClientes
                                                                 .nombre
