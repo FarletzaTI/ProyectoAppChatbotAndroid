@@ -37,13 +37,19 @@ class _BascPagestate extends State<opcBascPages> {
 
   bool resultadoValidacionFJ = false;
   String mostrarTextoFJ = "";
+
+  bool resultadoValidacionFGE = false;
+  String mostrarTextoFGE = "";
+
   bool finishSRI = false;
   bool finishFJ = false;
   bool finishLC = false;
+  bool finishFGE = false;
 
   RespuestaConsulta resp_ConsSRI;
   RespuestaConsulta resp_ConsFJ;
   RespuestaConsulta resp_ConsLC;
+  RespuestaConsulta resp_ConsFGE;
 
   @override
   void initState() {
@@ -113,6 +119,8 @@ class _BascPagestate extends State<opcBascPages> {
                               consultafuncionJudicial(myControllerRUC.text,
                                   myControllerNameSocial.text);
                               consultasri(myControllerRUC.text,
+                                  myControllerNameSocial.text);
+                              consultaFiscalia(myControllerRUC.text,
                                   myControllerNameSocial.text);
 
                               /*  consultaAPIBascPage(
@@ -370,6 +378,78 @@ class _BascPagestate extends State<opcBascPages> {
                           ],
                         ),
                       ),
+                  //CONSULTA DE FISCALIA GENERAL DEL ESTADO
+                  if (v_resultado == true)
+                    if (finishFGE == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionFGE == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionFGE == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool state) {},
+                                    ),
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("FISCALIA DEL ESTADO"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoFGE,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando Fiscalia Estado...")
+                          ],
+                        ),
+                      ),
                 ],
               ),
             ),
@@ -425,5 +505,21 @@ class _BascPagestate extends State<opcBascPages> {
       resultadoValidacionFJ = resp_ConsFJ.resultadoValidacion;
     });
     return resp_ConsFJ;
+  }
+
+  Future<RespuestaConsulta> consultaFiscalia(String ruc, String nombre) async {
+    resp_ConsFGE =
+        await NetworkHelper.attemptConsultaFiscaliaEstado(ruc, nombre);
+
+    resp_ConsFGE.listaMensajes.forEach((String texto) {
+      setState(() {
+        mostrarTextoFGE = mostrarTextoFGE + '\n' + texto;
+      });
+    });
+    setState(() {
+      finishFGE = true;
+      resultadoValidacionFGE = resp_ConsFGE.resultadoValidacion;
+    });
+    return resp_ConsFGE;
   }
 }

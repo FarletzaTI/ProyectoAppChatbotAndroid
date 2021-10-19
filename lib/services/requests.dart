@@ -23,7 +23,8 @@ import 'dart:async';
 const SERVER_IP =
     'http://181.198.116.210:9187/cotizadorWebAPI/api'; //Preproduccion
 
-const SERVER_IP_VALIDA = "http://192.168.168.23:8327/appValidacionPersonas";
+//const SERVER_IP_VALIDA = "http://192.168.168.23:8327/appValidacionPersonas";
+const SERVER_IP_VALIDA = "http://181.198.116.210:9387/appValidacionPersonas";
 //const SERVER_IP = 'http://192.168.168.23:8380/CotizadorWebApi/api'; //local
 
 class NetworkHelper {
@@ -203,15 +204,46 @@ class NetworkHelper {
     }
   }
 
+//attemptConsultaFiscaliaEstado
+// llamada al api Fiscalia General del Estado
+  static Future<RespuestaConsulta> attemptConsultaFiscaliaEstado(
+      String ruc, String nombre) async {
+    RespuestaConsulta datosFGE;
+
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/x-www-form-urlencoded";
+    header["authApp"] =
+        "R+h5yzo74UKymZrwluSFKGo8ijBOhmdp/PUUlsRD618PKqEbA+qNTSi0WSZr3IR/g45Dy2jbQLScpkOMLRxSyoGNyDDNEQUzBSv5OxQDW3McGFA9zVOtmRwVR1mcLTd/L1XeRC5MmAtgK9LzH2UF5SJo+hCA4ay6d66UcOUBmpo=";
+
+    var respesta = await http.post(
+        "$SERVER_IP_VALIDA/api/validarPersonaFiscalia",
+        body: {"numeroIdentificacion": ruc, "nombreRazonSocial": nombre},
+        headers: header);
+    if (respesta.statusCode != 200) return datosFGE;
+    if (respesta.statusCode == 200) {
+      try {
+        datosFGE = respuestaConsultaFromJson(respesta.body);
+      } on Exception catch (e) {}
+      return datosFGE;
+    }
+  }
+
   //llamada al API DE LISTA_CLINTON
   static Future<RespuestaConsulta> attemptConsultaListCLinton(
       String numRuc, String nombresocial) async {
     RespuestaConsulta datosListClinton;
-    var reslc = await http.post(
-      "$SERVER_IP_VALIDA/api/validarPersonaLC",
-      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
-    );
-    print("$SERVER_IP_VALIDA/api/api/validarPersonaLC");
+
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/x-www-form-urlencoded";
+    header["authApp"] =
+        "R+h5yzo74UKymZrwluSFKGo8ijBOhmdp/PUUlsRD618PKqEbA+qNTSi0WSZr3IR/g45Dy2jbQLScpkOMLRxSyoGNyDDNEQUzBSv5OxQDW3McGFA9zVOtmRwVR1mcLTd/L1XeRC5MmAtgK9LzH2UF5SJo+hCA4ay6d66UcOUBmpo=";
+
+    var reslc = await http.post("$SERVER_IP_VALIDA/api/validarPersonaLC",
+        body: {
+          "numeroIdentificacion": numRuc,
+          "nombreRazonSocial": nombresocial
+        },
+        headers: header);
 
     if (reslc.statusCode != 200) return datosListClinton;
     if (reslc.statusCode == 200) {
@@ -226,12 +258,19 @@ class NetworkHelper {
   static Future<RespuestaConsulta> attemptConsultaSRI(
       String numRuc, String nombresocial) async {
     RespuestaConsulta datosRI;
+
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/x-www-form-urlencoded";
+    header["authApp"] =
+        "R+h5yzo74UKymZrwluSFKGo8ijBOhmdp/PUUlsRD618PKqEbA+qNTSi0WSZr3IR/g45Dy2jbQLScpkOMLRxSyoGNyDDNEQUzBSv5OxQDW3McGFA9zVOtmRwVR1mcLTd/L1XeRC5MmAtgK9LzH2UF5SJo+hCA4ay6d66UcOUBmpo=";
+
     if (nombresocial == null) nombresocial = "";
-    var res = await http.post(
-      "$SERVER_IP_VALIDA/api/validarPersonaSRI",
-      body: {"numeroIdentificacion": numRuc, "nombreRazonSocial": nombresocial},
-    );
-    // print(res.body);
+    var res = await http.post("$SERVER_IP_VALIDA/api/validarPersonaSRI",
+        body: {
+          "numeroIdentificacion": numRuc,
+          "nombreRazonSocial": nombresocial
+        },
+        headers: header);
     if (res.statusCode != 200) return datosRI;
     if (res.statusCode == 200) {
       try {
@@ -245,12 +284,15 @@ class NetworkHelper {
   static Future<RespuestaConsulta> attemptConsultaFuncionJudicial(
       String ruc, String nombre) async {
     RespuestaConsulta datosFJ;
-    //nombre = "FARLETZA";
-    var respesta = await http.post(
-      "$SERVER_IP_VALIDA/api/validarPersonaFJ",
-      body: {"numeroIdentificacion": ruc, "nombreRazonSocial": nombre},
-    );
-    //print(respesta.body);
+
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/x-www-form-urlencoded";
+    header["authApp"] =
+        "R+h5yzo74UKymZrwluSFKGo8ijBOhmdp/PUUlsRD618PKqEbA+qNTSi0WSZr3IR/g45Dy2jbQLScpkOMLRxSyoGNyDDNEQUzBSv5OxQDW3McGFA9zVOtmRwVR1mcLTd/L1XeRC5MmAtgK9LzH2UF5SJo+hCA4ay6d66UcOUBmpo=";
+
+    var respesta = await http.post("$SERVER_IP_VALIDA/api/validarPersonaFJ",
+        body: {"numeroIdentificacion": ruc, "nombreRazonSocial": nombre},
+        headers: header);
     if (respesta.statusCode != 200) return datosFJ;
     if (respesta.statusCode == 200) {
       try {
