@@ -160,6 +160,155 @@ class _BascPagestate extends State<opcBascPages> {
                     height: 20,
                   ),
 
+//CONSULTA DE FISCALIA GENERAL DEL ESTADO
+                  if (v_resultado == true)
+                    if (finishFGE == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionFGE == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionFGE == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      textOff: "No",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool state) {},
+                                    ),
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    textOff: "No",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("FISCALIA DEL ESTADO"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoFGE,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando Fiscalia Estado...")
+                          ],
+                        ),
+                      ),
+
+                  //CONSULTA DE FUNCION JUDICIAL
+                  if (v_resultado == true)
+                    if (finishFJ == true)
+                      IgnorePointer(
+                        ignoring:
+                            (resultadoValidacionFJ == false) ? false : true,
+                        child: ExpansionTileCard(
+                          expandedTextColor: Colors.blue,
+                          baseColor: Colors.blueAccent[50],
+                          expandedColor: Colors.red[50],
+                          trailing: (resultadoValidacionFJ == false)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: LiteRollingSwitch(
+                                      value: false,
+                                      textOn: "X",
+                                      textOff: "No",
+                                      colorOn: Colors.redAccent[700],
+                                      iconOn: Icons.flag,
+                                      textSize: 16.0,
+                                      onChanged: (bool state) {},
+                                    ),
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 10),
+                                  child: LiteRollingSwitch(
+                                    value: true,
+                                    textOn: "Ok",
+                                    colorOn: Colors.greenAccent[700],
+                                    iconOn: Icons.check,
+                                    textSize: 16.0,
+                                    onChanged: (bool state) {},
+                                  ),
+                                ),
+                          title: Text("FUNCION JUDICIAL"),
+                          children: <Widget>[
+                            Divider(
+                              thickness: 1.0,
+                              height: 1.0,
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Text(
+                                  mostrarTextoFJ,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Cargando Funcion Judicial...")
+                          ],
+                        ),
+                      ),
+
                   //CONSULTA DE OFAC SDN LIST
                   if (v_resultado == true)
                     if (finishLC == true)
@@ -178,6 +327,7 @@ class _BascPagestate extends State<opcBascPages> {
                                     child: LiteRollingSwitch(
                                       value: false,
                                       textOn: "X",
+                                      textOff: "No",
                                       colorOn: Colors.redAccent[700],
                                       iconOn: Icons.flag,
                                       textSize: 16.0,
@@ -251,6 +401,7 @@ class _BascPagestate extends State<opcBascPages> {
                                     child: LiteRollingSwitch(
                                       value: false,
                                       textOn: "X",
+                                      textOff: "No",
                                       colorOn: Colors.redAccent[700],
                                       iconOn: Icons.flag,
                                       textSize: 16.0,
@@ -302,151 +453,6 @@ class _BascPagestate extends State<opcBascPages> {
                           children: [
                             CircularProgressIndicator(),
                             Text("Cargando SRI")
-                          ],
-                        ),
-                      ),
-
-                  //CONSULTA DE FUNCION JUDICIAL
-                  if (v_resultado == true)
-                    if (finishFJ == true)
-                      IgnorePointer(
-                        ignoring:
-                            (resultadoValidacionFJ == false) ? false : true,
-                        child: ExpansionTileCard(
-                          expandedTextColor: Colors.blue,
-                          baseColor: Colors.blueAccent[50],
-                          expandedColor: Colors.red[50],
-                          trailing: (resultadoValidacionFJ == false)
-                              ? Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: AbsorbPointer(
-                                    absorbing: true,
-                                    child: LiteRollingSwitch(
-                                      value: false,
-                                      textOn: "X",
-                                      colorOn: Colors.redAccent[700],
-                                      iconOn: Icons.flag,
-                                      textSize: 16.0,
-                                      onChanged: (bool state) {},
-                                    ),
-                                  ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 2, vertical: 10),
-                                  child: LiteRollingSwitch(
-                                    value: true,
-                                    textOn: "Ok",
-                                    colorOn: Colors.greenAccent[700],
-                                    iconOn: Icons.check,
-                                    textSize: 16.0,
-                                    onChanged: (bool state) {},
-                                  ),
-                                ),
-                          title: Text("FUNCION JUDICIAL"),
-                          children: <Widget>[
-                            Divider(
-                              thickness: 1.0,
-                              height: 1.0,
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 8.0,
-                                ),
-                                child: Text(
-                                  mostrarTextoFJ,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      .copyWith(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            Text("Cargando Funcion Judicial...")
-                          ],
-                        ),
-                      ),
-                  //CONSULTA DE FISCALIA GENERAL DEL ESTADO
-                  if (v_resultado == true)
-                    if (finishFGE == true)
-                      IgnorePointer(
-                        ignoring:
-                            (resultadoValidacionFGE == false) ? false : true,
-                        child: ExpansionTileCard(
-                          expandedTextColor: Colors.blue,
-                          baseColor: Colors.blueAccent[50],
-                          expandedColor: Colors.red[50],
-                          trailing: (resultadoValidacionFGE == false)
-                              ? Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: AbsorbPointer(
-                                    absorbing: true,
-                                    child: LiteRollingSwitch(
-                                      value: false,
-                                      textOn: "X",
-                                      colorOn: Colors.redAccent[700],
-                                      iconOn: Icons.flag,
-                                      textSize: 16.0,
-                                      onChanged: (bool state) {},
-                                    ),
-                                  ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 2, vertical: 10),
-                                  child: LiteRollingSwitch(
-                                    value: true,
-                                    textOn: "Ok",
-                                    colorOn: Colors.greenAccent[700],
-                                    iconOn: Icons.check,
-                                    textSize: 16.0,
-                                    onChanged: (bool state) {},
-                                  ),
-                                ),
-                          title: Text("FISCALIA DEL ESTADO"),
-                          children: <Widget>[
-                            Divider(
-                              thickness: 1.0,
-                              height: 1.0,
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 8.0,
-                                ),
-                                child: Text(
-                                  mostrarTextoFGE,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      .copyWith(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            Text("Cargando Fiscalia Estado...")
                           ],
                         ),
                       ),
