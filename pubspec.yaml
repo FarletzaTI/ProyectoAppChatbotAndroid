@@ -58,7 +58,7 @@ dependencies:
   list_tile_switch: ^1.0.0
   flutter_switch: ^0.3.2
   expansion_tile_card: ^2.0.0
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
