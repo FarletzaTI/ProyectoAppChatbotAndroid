@@ -144,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String contrato = "";
   String codeHS = "";
   String producto = "";
+
   int _radioValue = 0;
   List<DropdownMenuItem> items = [];
   List<DropdownMenuItem> itemsNaviera = [];
@@ -152,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<DropdownMenuItem> consigList = [];
   List<DropdownMenuItem<Week>> _dropdownMenuItems;
   List<DropdownMenuItem<ConEmbarque>> _dropdownMenuItems2;
-
+  String nombreVend = "";
   bool isLoadView = false;
   List<Widget> _viewApp = [];
 
@@ -168,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadView();
     _dropdownMenuItems = Week.buildDropdownMenuItems();
     _dropdownMenuItems2 = ConEmbarque.buildDropdownMenuItems();
+    nombreVend = Constants.nombreVendedor;
 
     _selectedWeek = _dropdownMenuItems[0].value;
     setState(() {});
@@ -261,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               radius: MediaQuery.of(context).size.width * 0.10,
                             ),
                             Text(
-                              "Vendedor 1",
+                              nombreVend,
                               style: TextStyle(color: Colors.white),
                             )
                           ],
@@ -312,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-              Text("Versión: 0.9.2")
+              Text("Versión: 1.0.2")
             ],
           ),
         ),
@@ -376,7 +378,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             radius: MediaQuery.of(context).size.width * 0.10,
                           ),
                           Text(
-                            "Vendedor 1",
+                            nombreVend,
                             style: TextStyle(color: Colors.white),
                           )
                         ],
@@ -862,6 +864,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loadView() {
     final opciones = Constants.opcionesModel;
+    final opcionvenes = Constants.nombreVendedor;
+
     opciones.forEach((opcionesModel) {
       if (opcionesModel.codigoVista.contains("CB")) {
         _viewApp.add(ListTile(

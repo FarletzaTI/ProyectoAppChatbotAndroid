@@ -1,4 +1,5 @@
 //@dart=2.9
+import 'package:app_prueba/models/consultaMovimientos.dart';
 import 'package:app_prueba/models/solicitudes_Customer.dart';
 import 'package:app_prueba/services/requests.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
   ButtonState stateTextWithIcon = ButtonState.idle;
   final _roController = TextEditingController();
   final _idclienteController = TextEditingController();
+  EntidadMov movimientosList;
 
   String numerodeRo = '';
   String ro = "";
@@ -51,7 +53,13 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  //Registrar Cliente
+                  // FutureBuilder(
+                  //  future: NetworkHelper.attemptConsultMovimientos(widget.solicitude.idsolicitud),
+                  //   initialData: InitialData,
+                  //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //    return ;
+                  //   },
+                  // ),//Registrar Cliente
                   ExpansionTile(
                     title: Text("Registrar Cliente"),
                     leading: Icon(MdiIcons.accountPlus, color: Colors.blue),
@@ -94,10 +102,6 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                               ),
                             )
                           : Container(),
-                      /*      (isChecked)
-                          ? */
-
-                      /*: Container(), */
                       Row(
                         children: [
                           Visibility(
@@ -123,6 +127,10 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                                         '',
                                         _idclienteController.text,
                                         '');
+                                    updateControlTareas(
+                                        '8',
+                                        '${widget.solicitude.idsolicitud}',
+                                        "F");
                                     setState(() {
                                       btnGrabarRuc = false;
                                     });
@@ -141,7 +149,6 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                     title: Text("Crear Ro"),
                     leading: Icon(MdiIcons.pencilBox, color: Colors.blue),
                     children: [
-                      //  Text("Ro asignado: $numerodeRo "),
                       CustomTextForm(
                         controller: _roController,
                         focusNode: focusNode,
@@ -154,21 +161,6 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          /* Container(
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  _submitRo();
-                                  /*     updateControlTareas('9',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                */
-                                });
-                              },
-                              child: Text("Actualizar Ro"),
-                              color: Colors.blue,
-                              textColor: Colors.white,
-                            ),
-                          ), */
                           SizedBox(
                             height: 20,
                             width: 20.0,
@@ -224,21 +216,6 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
     return registroafectado;
   }
 
-  /*  _submitRo() async {
-    try {
-      numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
-          ro, '${widget.solicitude.idsolicitud}');
-      /*  _solicitudeModel = _solicitudeModel.copyWith(numRo: _roController.text);
-      contactProvider.setSolicitude(_solicitudeModel); */
-
-      setState(() {
-        stateTextWithIcon = ButtonState.success;
-      });
-    } catch (e) {
-      stateTextWithIcon = ButtonState.fail;
-    }
-  }
- */
   Future<String> guardarMovimientos(
       String idsolicitud,
       String metodo,
@@ -270,5 +247,11 @@ class _RegistroCustomersPage extends State<RegistroCustomersPage> {
         numruc,
         numRo);
     return registroafectado;
+  }
+
+  Future<EntidadMov> obtenerMovimientos(String idsolicitud) async {
+    movimientosList =
+        await NetworkHelper.attemptConsultMovimientos(idsolicitud);
+    return movimientosList;
   }
 }

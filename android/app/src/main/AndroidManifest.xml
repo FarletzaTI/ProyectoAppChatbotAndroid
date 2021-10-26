@@ -2,7 +2,7 @@
     package="com.example.app_prueba">
    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="app_Gestion_Chatbot"
+        android:label="CHATBOT"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

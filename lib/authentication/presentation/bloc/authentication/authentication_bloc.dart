@@ -89,6 +89,7 @@ class AuthenticationBloc
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String jwt = await prefs.getString("token");
+      String vend = prefs.getString("nombreVendedor");
       if (jwt != null) {
         Map<String, dynamic> decodedJwt = Utils.parseJwt(jwt);
         if (decodedJwt["exp"] <
@@ -104,6 +105,7 @@ class AuthenticationBloc
                       ["vistaopciones"]
                   .map((x) => ViewAppModel.fromJson(x)));
               Constants.opcionesModel = listData;
+              Constants.nombreVendedor = vend;
             }
           }
           return jwt;

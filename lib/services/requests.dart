@@ -19,13 +19,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:async';
 
-//const SERVER_IP = 'http://181.198.116.210:9189/cotizadorWebAPI/api'; //Pruebas
 const SERVER_IP =
     'http://181.198.116.210:9187/cotizadorWebAPI/api'; //Preproduccion
 
+//const SERVER_IP = 'http://181.198.116.210:9189/cotizadorWebAPI/api'; //Pruebas
 //const SERVER_IP_VALIDA = "http://192.168.168.23:8327/appValidacionPersonas";
-const SERVER_IP_VALIDA = "http://181.198.116.210:9387/appValidacionPersonas";
 //const SERVER_IP = 'http://192.168.168.23:8380/CotizadorWebApi/api'; //local
+
+const SERVER_IP_VALIDA = "http://181.198.116.210:9387/appValidacionPersonas";
 
 class NetworkHelper {
   static Future<List<Solicitude>> attemptConsultRequest(
@@ -102,7 +103,9 @@ class NetworkHelper {
       "Email": email,
       "Password": md5.convert(utf8.encode(password)).toString()
     });
-    if (res.statusCode == 200) return res.body;
+    if (res.statusCode == 200) {
+      return res.body;
+    }
 
     if (res.statusCode != 200)
       throw Exception("Usuario o Contraseño no validos");
@@ -498,7 +501,7 @@ class NetworkHelper {
 
   //Api para consultar los movimientos realizados por el usuario
   static Future<EntidadMov> attemptConsultMovimientos(
-      String idsolicitud, BuildContext context) async {
+      String idsolicitud) async {
     EntidadMov registro;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -16,7 +16,7 @@ enum AuthenticationStatus { unknown, authenticated, unauthenticated, failed }
 
 class AuthenticationRepository {
   final _controller = StreamController<AuthenticationStatus>();
-
+  String nmbrevende = "";
   Stream<AuthenticationStatus> get status async* {
     await Future<void>.delayed(const Duration(seconds: 1));
     yield AuthenticationStatus.unauthenticated;
@@ -37,6 +37,8 @@ class AuthenticationRepository {
         Map<String, dynamic> user = jsonDecode(body);
         prefs.setString("token", user['token']);
         prefs.setInt("vendedorId", user['vendedorId']);
+        prefs.setString("nombreVendedor", user['NombreVend']);
+        nmbrevende = prefs.getString("nombreVendedor");
         prefs.setString("email", username);
         loadViews(user['token']);
 
@@ -100,6 +102,7 @@ class AuthenticationRepository {
                 ["vistaopciones"]
             .map((x) => ViewAppModel.fromJson(x)));
         Constants.opcionesModel = listData;
+        Constants.nombreVendedor = nmbrevende;
       }
     }
   }

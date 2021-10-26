@@ -1229,9 +1229,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                   //Registrar Cliente
                 ],
               ),
-              //  );
-
-              //  },
             ),
           ),
         ),
@@ -1277,7 +1274,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     );
   }
 
-  Future<List<ListaAgentes>> loadListAgentes(
+  /* Future<List<ListaAgentes>> loadListAgentes(
       String lineaNg, String nombrePais) async {
     agentesList = await NetworkHelper.attemptAgentes(lineaNg, nombrePais);
     agentesList.forEach((value) {
@@ -1289,7 +1286,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     setState(() {});
     return agentesList;
   }
-
+ */
   Future<String> updateControlTareas(
       String idtarea, String idsolicitud, String estado) async {
     registroafectado = await NetworkHelper.attempUpdatecontrolTareas(
@@ -1388,22 +1385,6 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       listaAdjunto = lista;
     });
   }
-
-  /*  _submitRo() async {
-    try {
-      numerodeRo = await NetworkHelper.attempUpdateNumeroRo(
-          ro, '${widget.solicitude.idsolicitud}');
-      _solicitudeModel = _solicitudeModel.copyWith(numRo: _roController.text);
-      contactProvider.setSolicitude(_solicitudeModel);
-
-      setState(() {
-        stateTextWithIcon = ButtonState.success;
-      });
-    } catch (e) {
-      stateTextWithIcon = ButtonState.fail;
-    }
-  }
- */
 
   List<Widget> _getTitleWidget() {
     return [
