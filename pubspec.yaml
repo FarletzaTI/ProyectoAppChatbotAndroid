@@ -58,6 +58,8 @@ dependencies:
   list_tile_switch: ^1.0.0
   flutter_switch: ^0.3.2
   expansion_tile_card: ^2.0.0
+  web_browser: ^0.4.0
+  webview_flutter: ^1.0.7
 
 dev_dependencies:
   flutter_test:

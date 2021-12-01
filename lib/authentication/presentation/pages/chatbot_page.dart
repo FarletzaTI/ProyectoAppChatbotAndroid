@@ -19,11 +19,8 @@ class _ChatBotPageState extends State<ChatBotPage>
   int vendedorId = 0;
   bool isLoadData = true;
 
-  //late TabController _controller;
-
   @override
   void initState() {
-    // _controller = TabController(length: 2, vsync: this);
     _loadIdVendedor();
     super.initState();
   }

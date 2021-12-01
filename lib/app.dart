@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:app_prueba/authentication/presentation/pages/chatbot_page.dart';
+import 'package:app_prueba/authentication/presentation/pages/page_powerBI.dart';
 import 'package:app_prueba/authentication/presentation/pages/solicitudesCustomers_page.dart';
 import 'package:app_prueba/const/constants.dart';
 import 'package:app_prueba/models/instruccionEmbarque.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
       : assert(authenticationRepository != null),
         assert(userRepository != null),
         super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
@@ -135,6 +137,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   ButtonState stateTextWithIcon = ButtonState.idle;
 
+  String token = "";
+  String correo = "";
+
   String zipCode = "";
   String shipper = "";
   String naviera = "";
@@ -160,8 +165,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Week _selectedWeek;
   ConEmbarque _selectedCondicion;
 
-  //INITIAL VALUES FOR SEARCHABLE DROPDOWN
-
   String initialOrigen = "GUAYAQUIL|41";
 
   @override
@@ -170,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _dropdownMenuItems = Week.buildDropdownMenuItems();
     _dropdownMenuItems2 = ConEmbarque.buildDropdownMenuItems();
     nombreVend = Constants.nombreVendedor;
-
+    loadPagina();
     _selectedWeek = _dropdownMenuItems[0].value;
     setState(() {});
     super.initState();
@@ -270,8 +273,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ),
-
-                    //Data dynami, of OptionModels, in future change with providers
                     isLoadView
                         ? Container(
                             child: Center(
@@ -291,7 +292,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: _viewApp,
                             ),
                           ),
-
                     Divider(
                       height: 1,
                       thickness: 1,
@@ -728,6 +728,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void loadPagina() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    token = prefs.getString("token") ?? "";
+    correo = prefs.getString("email") ?? "";
+    //setState(() {});
+  }
+
   _submitInstruccion() async {
     InstruccionEmbarque instruccion = new InstruccionEmbarque(
       shipperId: int.parse(shipper.split("|")[1]),
@@ -899,6 +907,19 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute route;
             route = MaterialPageRoute(
                 builder: (BuildContext context) => opcBascPages());
+            Navigator.push(context, route);
+          },
+        ));
+      }
+      if (opcionesModel.codigoVista.contains("BI")) {
+        _viewApp.add(ListTile(
+          leading: Icon(MdiIcons.poll),
+          title: Text(opcionesModel.descripcion),
+          onTap: () {
+            MaterialPageRoute route;
+            route = MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    PowerBIPage(token: token, email: correo));
             Navigator.push(context, route);
           },
         ));

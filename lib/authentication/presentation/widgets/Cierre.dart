@@ -33,6 +33,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   bool aprobado = false;
   bool isEnable = true;
+  String registroafectado = "";
 
   ListMotivo _selectedMotivo;
   @override
@@ -141,6 +142,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   _submitMotivo(_value, widget.idsolicitud, 'R',
                       _selectedMotivo.idmotivo.toString());
                 }
+                guardarMovimientos('${widget.idsolicitud}', '', '7', '', '', '',
+                    '', '', '', 'F', '', '', '', '');
               },
               child: Text("Aceptar"),
               color: Colors.blue,
@@ -167,6 +170,39 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         isEnable = true;
       });
     }
+  }
+
+  Future<String> guardarMovimientos(
+      String idsolicitud,
+      String metodo,
+      String paso,
+      String idagente,
+      String nombagente,
+      String idContactAg,
+      String nombContactAg,
+      String telContactAg,
+      String emailContactAg,
+      String estado,
+      String idmotivo,
+      String observacion,
+      String numruc,
+      String numRo) async {
+    registroafectado = await NetworkHelper.attempGuardarMovimientos(
+        idsolicitud,
+        metodo,
+        paso,
+        idagente,
+        nombagente,
+        idContactAg,
+        nombContactAg,
+        telContactAg,
+        emailContactAg,
+        estado,
+        idmotivo,
+        observacion,
+        numruc,
+        numRo);
+    return registroafectado;
   }
 
   _actualziarTarea(

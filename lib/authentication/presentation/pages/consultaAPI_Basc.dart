@@ -37,48 +37,6 @@ class _ConsultaAPIBascPageState extends State<consultaAPIBascPage> {
                     AsyncSnapshot<RespuestaConsulta> snapshot) {}),
           )
         ]);
-    /* Container(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  "Lista Clinton",
-                ),
-              ),
-            ],
-          ),
-          Divider(
-            height: 30,
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Text("SRI"),
-              )
-            ],
-          ),
-          Divider(
-            height: 30,
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Text("Funcion Judicial"),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-     */
   }
 
   Widget _hiperDetalles(BuildContext context) {

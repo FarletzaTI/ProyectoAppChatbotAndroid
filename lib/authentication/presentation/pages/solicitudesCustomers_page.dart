@@ -15,7 +15,6 @@ class _solicitudesCustomerstate extends State<solicitudesCustomerPage> {
 
   @override
   void initState() {
-    // _controller = TabController(length: 2, vsync: this);
     _loadIdVendedor();
     super.initState();
   }
