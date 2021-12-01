@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:app_prueba/authentication/domain/entities/seguimiento.dart';
 import 'package:app_prueba/authentication/presentation/pages/consultaAPI_Basc.dart';
 import 'package:app_prueba/models/EntidadesBASC/entidadFuncionJudicial.dart';
+import 'package:app_prueba/models/consultaMovimientos.dart';
 import 'package:app_prueba/models/seguimiento.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
@@ -55,6 +56,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   bool btnNextInfoEmb = true;
 
   String agenteSelected = '';
+  EntidadMov movimientosList;
 
   List<DropdownMenuItem> listaDropDownAgentes = [];
   ButtonState stateTextWithIcon = ButtonState.idle;
@@ -120,595 +122,657 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
       body: SafeArea(
         child: Container(
           child: SingleChildScrollView(
-            child: // FutureBuilder(
-                //future: , builder: (_, AsyncSnapshot<dynamic> snapshot) {  }
-
-                //Primero validar si hay data
-                //instancias objeto
-
-                ///objeto Nombre: , isBoton: false
-                /*   if snaphop.data == null objeto = consultaAPIBascPage();
-
-                  else objeto = snapshot.data; */
-
-                // return
-                Container(
-              child: Column(
-                children: [
-                  //Contactar prospecto / Cliente (paso 2)
-                  ExpansionTile(
-                    initiallyExpanded: true,
-                    title: Text(
-                      "Contactar prospecto / Cliente",
-                      style: TextStyle(
-                          fontSize: 16.0), //, fontWeight: FontWeight.w500),
-                    ),
-                    leading: Icon(MdiIcons.account, color: Colors.blue),
-                    children: <Widget>[
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Nombres : ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(text: "${widget.solicitude.nombre}")
-                          ],
-                        ),
-                      )),
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Email: ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(text: "${widget.solicitude.email}"),
-                          ],
-                        ),
-                      )),
-                      Container(
-                          child: RichText(
-                        text: TextSpan(
-                          text: 'Telefono: ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(text: "${widget.solicitude.telefono}"),
-                          ],
-                        ),
-                      )),
-                      Divider(
-                        height: 12,
-                      ),
-                      Container(
-                        height: 75,
-                        width: MediaQuery.of(context).size.width - 70,
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.all(30.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black12,
-                                  spreadRadius: 0,
-                                  blurRadius: 5.5)
-                            ]),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  metodo = "Telf";
-                                  launch("tel://${widget.solicitude.telefono}");
-                                  updateControlTareas('2',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                },
-                                icon: Icon(MdiIcons.phoneOutline,
-                                    color: Colors.blue)),
-                            VerticalDivider(
-                              color: Colors.black87,
-                              width: 1,
+            child: FutureBuilder(
+              future: NetworkHelper.attemptConsultMovimientos(
+                  widget.solicitude.idsolicitud.toString()),
+              builder:
+                  (BuildContext context, AsyncSnapshot<EntidadMov> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: Text('Please wait its loading...'));
+                } else {
+                  if (snapshot.hasError)
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  else
+                    return Container(
+                      child: Column(
+                        children: [
+                          //Contactar prospecto / Cliente (paso 2)
+                          ExpansionTile(
+                            initiallyExpanded: true,
+                            title: Text(
+                              "Contactar prospecto / Cliente",
+                              style: TextStyle(fontSize: 16.0),
                             ),
-                            IconButton(
-                                onPressed: () {
-                                  metodo = "ws";
-                                  launchWhatsApp(widget.solicitude.telefono);
-                                  updateControlTareas('2',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                },
-                                icon: Icon(MdiIcons.whatsapp,
-                                    color: Colors.blue)),
-                            VerticalDivider(
-                              color: Colors.black87,
-                              width: 1,
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  metodo = "Correo";
-                                  launch("mailto:${widget.solicitude.email}");
-                                  updateControlTareas('2',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                },
-                                icon: Icon(MdiIcons.emailOutline,
-                                    color: Colors.blue))
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Visibility(
-                        visible: _solicitudeModel.btncontinuar,
-                        child: Container(
-                            child: MaterialButton(
-                          onPressed: //objeto.isPrimeraopcion ? null :
-                              () {
-                            opcion2 = false;
+                            leading: Icon(MdiIcons.account, color: Colors.blue),
+                            children: <Widget>[
+                              Container(
+                                  child: RichText(
+                                text: TextSpan(
+                                  text: 'Nombres : ',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "${widget.solicitude.nombre}")
+                                  ],
+                                ),
+                              )),
+                              Container(
+                                  child: RichText(
+                                text: TextSpan(
+                                  text: 'Email: ',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "${widget.solicitude.email}"),
+                                  ],
+                                ),
+                              )),
+                              Container(
+                                  child: RichText(
+                                text: TextSpan(
+                                  text: 'Telefono: ',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "${widget.solicitude.telefono}"),
+                                  ],
+                                ),
+                              )),
+                              Divider(
+                                height: 12,
+                              ),
+                              Container(
+                                height: 75,
+                                width: MediaQuery.of(context).size.width - 70,
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.all(30.0),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black12,
+                                          spreadRadius: 0,
+                                          blurRadius: 5.5)
+                                    ]),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          metodo = "Telf";
+                                          launch(
+                                              "tel://${widget.solicitude.telefono}");
+                                          updateControlTareas(
+                                              '2',
+                                              '${widget.solicitude.idsolicitud}',
+                                              "P");
+                                        },
+                                        icon: Icon(MdiIcons.phoneOutline,
+                                            color: Colors.blue)),
+                                    VerticalDivider(
+                                      color: Colors.black87,
+                                      width: 1,
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          metodo = "ws";
+                                          launchWhatsApp(
+                                              widget.solicitude.telefono);
+                                          updateControlTareas(
+                                              '2',
+                                              '${widget.solicitude.idsolicitud}',
+                                              "P");
+                                        },
+                                        icon: Icon(MdiIcons.whatsapp,
+                                            color: Colors.blue)),
+                                    VerticalDivider(
+                                      color: Colors.black87,
+                                      width: 1,
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          metodo = "Correo";
+                                          launch(
+                                              "mailto:${widget.solicitude.email}");
+                                          updateControlTareas(
+                                              '2',
+                                              '${widget.solicitude.idsolicitud}',
+                                              "P");
+                                        },
+                                        icon: Icon(MdiIcons.emailOutline,
+                                            color: Colors.blue))
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Visibility(
+                                visible: _solicitudeModel.btncontinuar,
+                                child: Container(
+                                    child: MaterialButton(
+                                  onPressed: () {
+                                    opcion2 = false;
 
-                            setState(() {
-                              isEnable = false;
-                              if (btncontinuar == true) btncontinuar = false;
-                            });
-                            updateControlTareas(
-                                '2', '${widget.solicitude.idsolicitud}', "F");
-                            _solicitudeModel = _solicitudeModel.copyWith(
-                                btncontinuar: false, opcion2: false);
-                            contactProvider.setSolicitude(_solicitudeModel);
-                            guardarMovimientos(
-                                '${widget.solicitude.idsolicitud}',
-                                metodo,
-                                '2',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '');
-                          },
-                          child: Text("Siguiente"),
-                          color: Colors.blue,
-                          textColor: Colors.white,
-                        )),
-                      ),
-                    ],
-                  ),
-                  //Solicitar informacion de Embarque (paso 3)
-                  IgnorePointer(
-                    ignoring: contactProvider
-                        .getSolicitude(widget.solicitude.idsolicitud)
-                        .opcion2,
-                    child: ExpansionTile(
-                      title: Text("Solicitar informacion de Embarque"),
-                      leading: Icon(MdiIcons.airplane, color: Colors.blue),
-                      children: [
-                        Container(
-                          height: 75,
-                          width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.all(30.0),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    spreadRadius: 0,
-                                    blurRadius: 5.5)
-                              ]),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    metodo = "Tel";
-                                    launch(
-                                        "tel://${widget.solicitude.telefono}");
+                                    setState(() {
+                                      isEnable = false;
+                                      if (btncontinuar == true)
+                                        btncontinuar = false;
+                                    });
                                     updateControlTareas(
-                                        '3',
+                                        '2',
                                         '${widget.solicitude.idsolicitud}',
-                                        "P");
-                                  },
-                                  icon: Icon(MdiIcons.phoneOutline,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    metodo = "ws";
-                                    launchWhatsApp(widget.solicitude.telefono);
-                                    updateControlTareas(
-                                        '3',
+                                        "F");
+                                    _solicitudeModel =
+                                        _solicitudeModel.copyWith(
+                                            btncontinuar: false,
+                                            opcion2: false);
+                                    contactProvider
+                                        .setSolicitude(_solicitudeModel);
+                                    guardarMovimientos(
                                         '${widget.solicitude.idsolicitud}',
-                                        "P");
+                                        metodo,
+                                        '2',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '');
                                   },
-                                  icon: Icon(MdiIcons.whatsapp,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
+                                  child: Text("Siguiente"),
+                                  color: Colors.blue,
+                                  textColor: Colors.white,
+                                )),
                               ),
-                              IconButton(
-                                  onPressed: () {
-                                    metodo = "email";
-                                    launch("mailto:${widget.solicitude.email}");
-                                    updateControlTareas(
-                                        '3',
-                                        '${widget.solicitude.idsolicitud}',
-                                        "P");
-                                  },
-                                  icon: Icon(MdiIcons.emailOutline,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
-                              ),
-                              IconButton(
-                                  onPressed: () async {
-                                    FilePickerResult result =
-                                        await FilePicker.platform.pickFiles();
-
-                                    if (result != null) {
-                                      File file =
-                                          File(result.files.single.path);
-                                      setState(() {
-                                        fileName = file.path;
-                                        btnSubirArchivos2 = true;
-                                      });
-                                    } else {}
-                                  },
-                                  icon: Icon(MdiIcons.fileUpload,
-                                      color: Colors.blue)),
                             ],
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Visibility(
-                              visible: btnSubirArchivos2,
-                              child: MaterialButton(
-                                minWidth: 200.0,
-                                height: 40.0,
-                                onPressed: () {
-                                  subirArchivos(fileName,
-                                      '${widget.solicitude.idsolicitud}', '3');
-                                  updateControlTareas('3',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                },
-                                color: Colors.lightBlue,
-                                child: Text('Subir Archivo',
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Visibility(
-                          visible: (listaAdjunto.length != 0) ? true : false,
-                          child: Container(
-                            height: 200,
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                      color: Colors.black,
-                                    ),
-                                itemCount: listaAdjunto.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                      onTap: () {
-                                        launch(
-                                            listaAdjunto[index].linkDescarga);
-                                      },
-                                      leading: Icon(Icons.file_present),
-                                      trailing: Text(
-                                        "",
-                                        style: TextStyle(
-                                            color: Colors.green, fontSize: 15),
+                          //Solicitar informacion de Embarque (paso 3)
+                          IgnorePointer(
+                            ignoring: contactProvider
+                                .getSolicitude(widget.solicitude.idsolicitud)
+                                .opcion2,
+                            child: ExpansionTile(
+                              title: Text("Solicitar informacion de Embarque"),
+                              leading:
+                                  Icon(MdiIcons.airplane, color: Colors.blue),
+                              children: [
+                                Container(
+                                  height: 75,
+                                  width: MediaQuery.of(context).size.width - 70,
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.all(30.0),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            spreadRadius: 0,
+                                            blurRadius: 5.5)
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            metodo = "Tel";
+                                            launch(
+                                                "tel://${widget.solicitude.telefono}");
+                                            updateControlTareas(
+                                                '3',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.phoneOutline,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
                                       ),
-                                      title: Text(
-                                          "${listaAdjunto[index].nombreArchivo}"));
-                                }),
-                          ),
-                        ),
-                        Visibility(
-                          visible: btnNextInfoEmb,
-                          child: Container(
-                            child: MaterialButton(
-                              child: Text("Siguiente"),
-                              color: Colors.blue,
-                              textColor: Colors.white,
-                              onPressed: () {
-                                guardarMovimientos(
-                                    '${widget.solicitude.idsolicitud}',
-                                    metodo,
-                                    '3',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '');
-                                setState(() {
-                                  btnNextInfoEmb = false;
-                                });
-                                updateControlTareas('3',
-                                    '${widget.solicitude.idsolicitud}', "F");
-                                opcion3 = false;
-                              },
+                                      IconButton(
+                                          onPressed: () {
+                                            metodo = "ws";
+                                            launchWhatsApp(
+                                                widget.solicitude.telefono);
+                                            updateControlTareas(
+                                                '3',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.whatsapp,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            metodo = "email";
+                                            launch(
+                                                "mailto:${widget.solicitude.email}");
+                                            updateControlTareas(
+                                                '3',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.emailOutline,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
+                                      ),
+                                      IconButton(
+                                          onPressed: () async {
+                                            FilePickerResult result =
+                                                await FilePicker.platform
+                                                    .pickFiles();
+
+                                            if (result != null) {
+                                              File file = File(
+                                                  result.files.single.path);
+                                              setState(() {
+                                                fileName = file.path;
+                                                btnSubirArchivos2 = true;
+                                              });
+                                            } else {}
+                                          },
+                                          icon: Icon(MdiIcons.fileUpload,
+                                              color: Colors.blue)),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Visibility(
+                                      visible: btnSubirArchivos2,
+                                      child: MaterialButton(
+                                        minWidth: 200.0,
+                                        height: 40.0,
+                                        onPressed: () {
+                                          subirArchivos(
+                                              fileName,
+                                              '${widget.solicitude.idsolicitud}',
+                                              '3');
+                                          updateControlTareas(
+                                              '3',
+                                              '${widget.solicitude.idsolicitud}',
+                                              "P");
+                                        },
+                                        color: Colors.lightBlue,
+                                        child: Text('Subir Archivo',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Visibility(
+                                  visible:
+                                      (listaAdjunto.length != 0) ? true : false,
+                                  child: Container(
+                                    height: 200,
+                                    child: ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            Divider(
+                                              color: Colors.black,
+                                            ),
+                                        itemCount: listaAdjunto.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return ListTile(
+                                              onTap: () {
+                                                launch(listaAdjunto[index]
+                                                    .linkDescarga);
+                                              },
+                                              leading: Icon(Icons.file_present),
+                                              trailing: Text(
+                                                "",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 15),
+                                              ),
+                                              title: Text(
+                                                  "${listaAdjunto[index].nombreArchivo}"));
+                                        }),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: btnNextInfoEmb,
+                                  child: Container(
+                                    child: MaterialButton(
+                                      child: Text("Siguiente"),
+                                      color: Colors.blue,
+                                      textColor: Colors.white,
+                                      onPressed: () {
+                                        guardarMovimientos(
+                                            '${widget.solicitude.idsolicitud}',
+                                            metodo,
+                                            '3',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            '');
+                                        setState(() {
+                                          btnNextInfoEmb = false;
+                                        });
+                                        updateControlTareas(
+                                            '3',
+                                            '${widget.solicitude.idsolicitud}',
+                                            "F");
+                                        opcion3 = false;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //Negociacion Interna (paso 4)
-                  IgnorePointer(
-                    ignoring: opcion3,
-                    child: ExpansionTile(
-                      title: Text("Negociacion Interna"),
-                      leading: Icon(MdiIcons.ballotOutline, color: Colors.blue),
-                      children: [
-                        Container(
-                          child: FutureBuilder(
-                              future: NetworkHelper.attemptAgentes(
-                                  lineaNg, nombrePais),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<ListaAgentes>> snapshot) {
-                                List<Widget> children;
+                          //Negociacion Interna (paso 4)
+                          IgnorePointer(
+                            ignoring: opcion3,
+                            child: ExpansionTile(
+                              title: Text("Negociacion Interna"),
+                              leading: Icon(MdiIcons.ballotOutline,
+                                  color: Colors.blue),
+                              children: [
+                                Container(
+                                  child: FutureBuilder(
+                                      future: NetworkHelper.attemptAgentes(
+                                          lineaNg, nombrePais),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<List<ListaAgentes>>
+                                              snapshot) {
+                                        List<Widget> children;
 
-                                if (!snapshot.hasData) {
-                                  children = <Widget>[
-                                    const Icon(
-                                      Icons.error_outline,
-                                      color: Colors.red,
-                                      size: 60,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16),
-                                      child: Text('Error: ${snapshot.error}'),
-                                    )
-                                  ];
-                                } else if (snapshot.hasData) {
-                                  agentesList = snapshot.data;
-                                  listaDropDownAgentes = [];
+                                        if (!snapshot.hasData) {
+                                          children = <Widget>[
+                                            const Icon(
+                                              Icons.error_outline,
+                                              color: Colors.red,
+                                              size: 60,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16),
+                                              child: Text(
+                                                  'Error: ${snapshot.error}'),
+                                            )
+                                          ];
+                                        } else if (snapshot.hasData) {
+                                          agentesList = snapshot.data;
+                                          listaDropDownAgentes = [];
 
-                                  //Verifica si ya selecciono antes
-                                  //objeto.isAgente =true
-                                  /*  listaDropDownAgentes.add(DropdownMenuItem(
+                                          //Verifica si ya selecciono antes
+                                          //objeto.isAgente =true
+                                          /*  listaDropDownAgentes.add(DropdownMenuItem(
                                             child: _menuItem('${objeto.nombreAggente}',
                                                 MdiIcons.ferry),
                                             value:
                                                 '${objeto.nombreAggente}|${objeto.idagente}',
                                           )); */
-                                  agentesList.forEach((value) {
-                                    /*  if(objeto.isagente && value.nombreAggente == objeto.nombreAggente) {
+                                          agentesList.forEach((value) {
+                                            /*  if(objeto.isagente && value.nombreAggente == objeto.nombreAggente) {
 
                                           } else  */
 
-                                    listaDropDownAgentes.add(DropdownMenuItem(
-                                      child: _menuItem('${value.nombreAggente}',
-                                          MdiIcons.ferry),
-                                      value:
-                                          '${value.nombreAggente}|${value.idagente}',
-                                    ));
-                                  });
+                                            listaDropDownAgentes
+                                                .add(DropdownMenuItem(
+                                              child: _menuItem(
+                                                  '${value.nombreAggente}',
+                                                  MdiIcons.ferry),
+                                              value:
+                                                  '${value.nombreAggente}|${value.idagente}',
+                                            ));
+                                          });
 
-                                  children = _buildFormChildren(context);
-                                } else if (snapshot.hasError) {
-                                  children = <Widget>[
-                                    const Icon(
-                                      Icons.error_outline,
-                                      color: Colors.red,
-                                      size: 60,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16),
-                                      child: Text('Error: ${snapshot.error}'),
-                                    )
-                                  ];
-                                } else {
-                                  children = <Widget>[
-                                    Container(
-                                      margin: EdgeInsets.all(16),
-                                    ),
-                                    SizedBox(
-                                      child: CircularProgressIndicator(),
-                                      width: 60,
-                                      height: 60,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 30),
-                                      child: Text('Cargando Agentes...'),
-                                    )
-                                  ];
-                                }
+                                          children =
+                                              _buildFormChildren(context);
+                                        } else if (snapshot.hasError) {
+                                          children = <Widget>[
+                                            const Icon(
+                                              Icons.error_outline,
+                                              color: Colors.red,
+                                              size: 60,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16),
+                                              child: Text(
+                                                  'Error: ${snapshot.error}'),
+                                            )
+                                          ];
+                                        } else {
+                                          children = <Widget>[
+                                            Container(
+                                              margin: EdgeInsets.all(16),
+                                            ),
+                                            SizedBox(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                              width: 60,
+                                              height: 60,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 30),
+                                              child:
+                                                  Text('Cargando Agentes...'),
+                                            )
+                                          ];
+                                        }
 
-                                /*    emailContactoAgente = "";
+                                        /*    emailContactoAgente = "";
                                 nombreAgenteSele = "";
                                 telfContactoAgente = ""; */
-                                return Container(
-                                  child: Column(
-                                    children: children,
-                                  ),
-                                );
-                              }),
-                        ),
-                        agenteSelected != null && agenteSelected.length > 0
-                            ? FutureBuilder(
-                                future: NetworkHelper.attemptContactoAgente(
-                                    agenteSelected),
-                                builder: (context,
-                                    AsyncSnapshot<ContactosSegunAgente>
-                                        snapshot) {
-                                  switch (snapshot.connectionState) {
-                                    case ConnectionState.none:
-                                    case ConnectionState.waiting:
-                                      return Center(
-                                        child: Container(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              CircularProgressIndicator(),
-                                              Text("Cargando Agentes")
-                                            ],
-                                          ),
-                                        ),
-                                      );
-
-                                    default:
-                                      if (snapshot.hasError)
                                         return Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.error),
-                                                SizedBox(
-                                                  height: 20.0,
-                                                ),
-                                                Text(
-                                                    "No se pudo cargar los datos, por favor intente mas tarde.")
-                                              ],
-                                            ));
-                                      else {
-                                        if (!snapshot.hasData)
-                                          return Container(
-                                              alignment: Alignment.center,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(Icons.error),
-                                                  SizedBox(
-                                                    height: 20.0,
+                                          child: Column(
+                                            children: children,
+                                          ),
+                                        );
+                                      }),
+                                ),
+                                agenteSelected != null &&
+                                        agenteSelected.length > 0
+                                    ? FutureBuilder(
+                                        future:
+                                            NetworkHelper.attemptContactoAgente(
+                                                agenteSelected),
+                                        builder: (context,
+                                            AsyncSnapshot<ContactosSegunAgente>
+                                                snapshot) {
+                                          switch (snapshot.connectionState) {
+                                            case ConnectionState.none:
+                                            case ConnectionState.waiting:
+                                              return Center(
+                                                child: Container(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      CircularProgressIndicator(),
+                                                      Text("Cargando Agentes")
+                                                    ],
                                                   ),
-                                                  Text(
-                                                      "No se pudo cargar los datos, por favor intente mas tarde.")
-                                                ],
-                                              ));
-                                      }
-                                      return Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                .2, //200,
-                                        child: ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: snapshot
-                                                .data.contactosAgente.length,
-                                            itemBuilder:
-                                                (BuildContext context, index) {
-                                              final contactosClientes = snapshot
-                                                  .data.contactosAgente[index];
-                                              return Container(
-                                                child: Column(
-                                                  children: [
-                                                    ListTile(
-                                                      title: Text(
-                                                          contactosClientes
-                                                              .nombre),
-                                                      subtitle: Text(
-                                                          "Tipo Carga: ${contactosClientes.tipoCarga}"),
-                                                      leading: Icon(
-                                                          MdiIcons.account),
-                                                      onTap: () {
-                                                        List<MediosdeContacto>
-                                                            listaEmail =
-                                                            contactosClientes
-                                                                .mediosdeContacto
-                                                                .where((element) =>
-                                                                    element
-                                                                        .codigo ==
-                                                                    "E")
-                                                                .toList();
-
-                                                        nombreAgenteSele =
-                                                            contactosClientes
-                                                                .nombre
-                                                                .toString();
-
-                                                        List<MediosdeContacto>
-                                                            listaTelf =
-                                                            contactosClientes
-                                                                .mediosdeContacto
-                                                                .where((element) =>
-                                                                    element
-                                                                        .codigo ==
-                                                                    "T")
-                                                                .toList();
-                                                        if (listaTelf.length >=
-                                                                2 ||
-                                                            listaEmail.length >=
-                                                                2) {
-                                                          showModalBottomSheet(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return AgentContactModalPage(
-                                                                listaEmail:
-                                                                    listaEmail,
-                                                                listaTelf:
-                                                                    listaTelf,
-                                                                cambiarEmail:
-                                                                    changeEmail,
-                                                                cambiarTelf:
-                                                                    changeTelefono,
-                                                              );
-                                                            },
-                                                          );
-                                                        } else {
-                                                          if (listaEmail
-                                                                  .length ==
-                                                              1) {
-                                                            setState(() {
-                                                              emailContactoAgente =
-                                                                  listaEmail[0]
-                                                                      .valor;
-                                                            });
-                                                          }
-                                                          if (listaTelf
-                                                                  .length ==
-                                                              1) {
-                                                            setState(() {
-                                                              telfContactoAgente =
-                                                                  listaTelf[0]
-                                                                      .valor;
-                                                            });
-                                                          }
-                                                        }
-                                                      },
-                                                    ),
-                                                    Divider(),
-                                                  ],
                                                 ),
                                               );
-                                            }),
-                                      );
-                                  }
-                                })
-                            : Container(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        /*  objeto.isAgente ? Container(
+
+                                            default:
+                                              if (snapshot.hasError)
+                                                return Container(
+                                                    alignment: Alignment.center,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(Icons.error),
+                                                        SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        Text(
+                                                            "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                      ],
+                                                    ));
+                                              else {
+                                                if (!snapshot.hasData)
+                                                  return Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(Icons.error),
+                                                          SizedBox(
+                                                            height: 20.0,
+                                                          ),
+                                                          Text(
+                                                              "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                        ],
+                                                      ));
+                                              }
+                                              return Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    .2, //200,
+                                                child: ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: snapshot.data
+                                                        .contactosAgente.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            index) {
+                                                      final contactosClientes =
+                                                          snapshot.data
+                                                                  .contactosAgente[
+                                                              index];
+                                                      return Container(
+                                                        child: Column(
+                                                          children: [
+                                                            ListTile(
+                                                              title: Text(
+                                                                  contactosClientes
+                                                                      .nombre),
+                                                              subtitle: Text(
+                                                                  "Tipo Carga: ${contactosClientes.tipoCarga}"),
+                                                              leading: Icon(
+                                                                  MdiIcons
+                                                                      .account),
+                                                              onTap: () {
+                                                                List<MediosdeContacto>
+                                                                    listaEmail =
+                                                                    contactosClientes
+                                                                        .mediosdeContacto
+                                                                        .where((element) =>
+                                                                            element.codigo ==
+                                                                            "E")
+                                                                        .toList();
+
+                                                                nombreAgenteSele =
+                                                                    contactosClientes
+                                                                        .nombre
+                                                                        .toString();
+
+                                                                List<MediosdeContacto>
+                                                                    listaTelf =
+                                                                    contactosClientes
+                                                                        .mediosdeContacto
+                                                                        .where((element) =>
+                                                                            element.codigo ==
+                                                                            "T")
+                                                                        .toList();
+                                                                if (listaTelf
+                                                                            .length >=
+                                                                        2 ||
+                                                                    listaEmail
+                                                                            .length >=
+                                                                        2) {
+                                                                  showModalBottomSheet(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AgentContactModalPage(
+                                                                        listaEmail:
+                                                                            listaEmail,
+                                                                        listaTelf:
+                                                                            listaTelf,
+                                                                        cambiarEmail:
+                                                                            changeEmail,
+                                                                        cambiarTelf:
+                                                                            changeTelefono,
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                } else {
+                                                                  if (listaEmail
+                                                                          .length ==
+                                                                      1) {
+                                                                    setState(
+                                                                        () {
+                                                                      emailContactoAgente =
+                                                                          listaEmail[0]
+                                                                              .valor;
+                                                                    });
+                                                                  }
+                                                                  if (listaTelf
+                                                                          .length ==
+                                                                      1) {
+                                                                    setState(
+                                                                        () {
+                                                                      telfContactoAgente =
+                                                                          listaTelf[0]
+                                                                              .valor;
+                                                                    });
+                                                                  }
+                                                                }
+                                                              },
+                                                            ),
+                                                            Divider(),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    }),
+                                              );
+                                          }
+                                        })
+                                    : Container(),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                /*  objeto.isAgente ? Container(
                                       child: RichText(
                                       text: TextSpan(
                                         text: 'Nombre : ${objeo.nombreagente}',
@@ -718,520 +782,565 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                                         children: <TextSpan>[TextSpan(text: "")],
                                       ),
                                     )) :  */
-                        nombreAgenteSele.length > 0
-                            ? Container(
-                                child: RichText(
-                                text: TextSpan(
-                                  text: 'Nombre: $nombreAgenteSele',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  children: <TextSpan>[TextSpan(text: "")],
+                                nombreAgenteSele.length > 0
+                                    ? Container(
+                                        child: RichText(
+                                        text: TextSpan(
+                                          text: 'Nombre: $nombreAgenteSele',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                          children: <TextSpan>[
+                                            TextSpan(text: "")
+                                          ],
+                                        ),
+                                      ))
+                                    : Container(),
+                                telfContactoAgente.length > 0
+                                    ? Container(
+                                        child: RichText(
+                                        text: TextSpan(
+                                          text: 'Telefono: ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                          children: <TextSpan>[
+                                            TextSpan(text: telfContactoAgente)
+                                          ],
+                                        ),
+                                      ))
+                                    : Container(),
+                                emailContactoAgente.length > 0
+                                    ? Container(
+                                        child: RichText(
+                                        text: TextSpan(
+                                          text: 'Email: ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: "$emailContactoAgente")
+                                          ],
+                                        ),
+                                      ))
+                                    : Container(),
+                                Container(
+                                  height: 75,
+                                  width: MediaQuery.of(context).size.width - 70,
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.all(30.0),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            spreadRadius: 0,
+                                            blurRadius: 5.5)
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            launch("tel://$telfContactoAgente");
+                                            updateControlTareas(
+                                                '4',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.phoneOutline,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            launchWhatsApp(telfContactoAgente);
+                                            updateControlTareas(
+                                                '4',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.whatsapp,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            launch(
+                                                "mailto:$emailContactoAgente");
+                                            updateControlTareas(
+                                                '4',
+                                                '${widget.solicitude.idsolicitud}',
+                                                "P");
+                                          },
+                                          icon: Icon(MdiIcons.emailOutline,
+                                              color: Colors.blue)),
+                                      VerticalDivider(
+                                        color: Colors.black87,
+                                        width: 1,
+                                      ),
+                                      IconButton(
+                                          onPressed: () async {
+                                            result1 = await FilePicker.platform
+                                                .pickFiles();
+                                            if (result1 != null) {
+                                              File file = File(
+                                                  result1.files.single.path);
+                                              setState(() {
+                                                fileName3 = file.path;
+                                                btnSubirArchivos3 = true;
+                                              });
+                                            } else {
+                                              // User canceled the picker
+                                            }
+                                          },
+                                          icon: Icon(MdiIcons.fileUpload,
+                                              color: Colors.blue)),
+                                    ],
+                                  ),
                                 ),
-                              ))
-                            : Container(),
-                        telfContactoAgente.length > 0
-                            ? Container(
-                                child: RichText(
-                                text: TextSpan(
-                                  text: 'Telefono: ',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  children: <TextSpan>[
-                                    TextSpan(text: telfContactoAgente)
-                                  ],
-                                ),
-                              ))
-                            : Container(),
-                        emailContactoAgente.length > 0
-                            ? Container(
-                                child: RichText(
-                                text: TextSpan(
-                                  text: 'Email: ',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  children: <TextSpan>[
-                                    TextSpan(text: "$emailContactoAgente")
-                                  ],
-                                ),
-                              ))
-                            : Container(),
-                        Container(
-                          height: 75,
-                          width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.all(30.0),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    spreadRadius: 0,
-                                    blurRadius: 5.5)
-                              ]),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    launch("tel://$telfContactoAgente");
-                                    updateControlTareas(
-                                        '4',
-                                        '${widget.solicitude.idsolicitud}',
-                                        "P");
-                                  },
-                                  icon: Icon(MdiIcons.phoneOutline,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    launchWhatsApp(telfContactoAgente);
-                                    updateControlTareas(
-                                        '4',
-                                        '${widget.solicitude.idsolicitud}',
-                                        "P");
-                                  },
-                                  icon: Icon(MdiIcons.whatsapp,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    launch("mailto:$emailContactoAgente");
-                                    updateControlTareas(
-                                        '4',
-                                        '${widget.solicitude.idsolicitud}',
-                                        "P");
-                                  },
-                                  icon: Icon(MdiIcons.emailOutline,
-                                      color: Colors.blue)),
-                              VerticalDivider(
-                                color: Colors.black87,
-                                width: 1,
-                              ),
-                              IconButton(
-                                  onPressed: () async {
-                                    result1 =
-                                        await FilePicker.platform.pickFiles();
-                                    if (result1 != null) {
-                                      File file =
-                                          File(result1.files.single.path);
-                                      setState(() {
-                                        fileName3 = file.path;
-                                        btnSubirArchivos3 = true;
-                                      });
-                                    } else {
-                                      // User canceled the picker
-                                    }
-                                  },
-                                  icon: Icon(MdiIcons.fileUpload,
-                                      color: Colors.blue)),
-                            ],
-                          ),
-                        ),
-                        if (result1 != null)
-                          RichText(
-                            text: TextSpan(
-                              //text: '',
-                              style: DefaultTextStyle.of(context).style,
-                              children: const <TextSpan>[
-                                TextSpan(
-                                    text: 'Archivo cargado:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ),
-                        Text("$fileName3"),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Visibility(
-                          visible: btnSubirArchivos3,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              MaterialButton(
-                                minWidth: 200.0,
-                                height: 40.0,
-                                onPressed: () {
-                                  subirArchivos(fileName3,
-                                      '${widget.solicitude.idsolicitud}', '4');
-                                  updateControlTareas('4',
-                                      '${widget.solicitude.idsolicitud}', "P");
-                                },
-                                color: Colors.lightBlue,
-                                child: Text('Subir Archivo',
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Visibility(
-                          visible: (listaAdjunto.length != 0) ? true : false,
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * .2,
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                      color: Colors.black,
+                                if (result1 != null)
+                                  RichText(
+                                    text: TextSpan(
+                                      //text: '',
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: const <TextSpan>[
+                                        TextSpan(
+                                            text: 'Archivo cargado:',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ],
                                     ),
-                                itemCount: listaAdjunto.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                    onTap: () {
-                                      launch(listaAdjunto[index].linkDescarga);
+                                  ),
+                                Text("$fileName3"),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Visibility(
+                                  visible: btnSubirArchivos3,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      MaterialButton(
+                                        minWidth: 200.0,
+                                        height: 40.0,
+                                        onPressed: () {
+                                          subirArchivos(
+                                              fileName3,
+                                              '${widget.solicitude.idsolicitud}',
+                                              '4');
+                                          updateControlTareas(
+                                              '4',
+                                              '${widget.solicitude.idsolicitud}',
+                                              "P");
+                                        },
+                                        color: Colors.lightBlue,
+                                        child: Text('Subir Archivo',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Visibility(
+                                  visible:
+                                      (listaAdjunto.length != 0) ? true : false,
+                                  child: Container(
+                                    height:
+                                        MediaQuery.of(context).size.height * .2,
+                                    child: ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            Divider(
+                                              color: Colors.black,
+                                            ),
+                                        itemCount: listaAdjunto.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return ListTile(
+                                            onTap: () {
+                                              launch(listaAdjunto[index]
+                                                  .linkDescarga);
+                                            },
+                                            leading: Icon(Icons.file_present),
+                                            title: Text(
+                                                "${listaAdjunto[index].nombreArchivo}"),
+                                            trailing: Text(
+                                              "",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 10),
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      opcion4 = false;
+                                      setState(() {});
+                                      guardarMovimientos(
+                                          '${widget.solicitude.idsolicitud}',
+                                          metodo,
+                                          '4',
+                                          agenteSelected,
+                                          nombreAgenteSele,
+                                          '',
+                                          nombreContactoAg,
+                                          telfContactoAgente,
+                                          emailContactoAgente,
+                                          '',
+                                          '',
+                                          '',
+                                          '',
+                                          '');
+                                      print(agenteSelected +
+                                          '/' +
+                                          nombreAgenteSele +
+                                          '/' +
+                                          nombreContactoAg);
+                                      updateControlTareas(
+                                          '4',
+                                          '${widget.solicitude.idsolicitud}',
+                                          "F");
                                     },
-                                    leading: Icon(Icons.file_present),
-                                    title: Text(
-                                        "${listaAdjunto[index].nombreArchivo}"),
-                                    trailing: Text(
-                                      "",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 10),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          child: MaterialButton(
-                            onPressed: () {
-                              opcion4 = false;
-                              setState(() {});
-                              guardarMovimientos(
-                                  '${widget.solicitude.idsolicitud}',
-                                  metodo,
-                                  '4',
-                                  agenteSelected,
-                                  nombreAgenteSele,
-                                  '',
-                                  nombreContactoAg,
-                                  telfContactoAgente,
-                                  emailContactoAgente,
-                                  '',
-                                  '',
-                                  '',
-                                  '',
-                                  '');
-                              print(agenteSelected +
-                                  '/' +
-                                  nombreAgenteSele +
-                                  '/' +
-                                  nombreContactoAg);
-                              updateControlTareas(
-                                  '4', '${widget.solicitude.idsolicitud}', "F");
-                            },
-                            child: Text("Siguiente"),
-                            color: Colors.blue,
-                            textColor: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //Cotizacion (paso 5)
-                  IgnorePointer(
-                    ignoring: opcion4,
-                    child: ExpansionTile(
-                      title: Text("Cotizacion"),
-                      leading: Icon(MdiIcons.textBox, color: Colors.blue),
-                      children: [
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //  children: [
-                        TextButton.icon(
-                          onPressed: () async {
-                            guardarMovimientos(
-                                '${widget.solicitude.idsolicitud}',
-                                '',
-                                '5',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '');
-                            result = await FilePicker.platform.pickFiles();
-                            if (result != null) {
-                              File file = File(result.files.single.path);
-                              setState(() {
-                                fileName4 = file.path;
-                                btnSubirArchivosCot = true;
-                              });
-                            } else {}
-                          },
-                          icon: Icon(MdiIcons.fileUpload, size: 18),
-                          label: Text("Cargar Archivo"),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        if (result != null)
-                          RichText(
-                            text: TextSpan(
-                              //text: '',
-                              style: DefaultTextStyle.of(context).style,
-                              children: const <TextSpan>[
-                                TextSpan(
-                                    text: 'Archivo cargado:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                    child: Text("Siguiente"),
+                                    color: Colors.blue,
+                                    textColor: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        Text("$fileName4"),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Visibility(
-                          visible: btnSubirArchivosCot,
-                          child: MaterialButton(
-                            minWidth: 100.0,
-                            height: 40.0,
-                            onPressed: //fileName4 != ""?
-                                () {
-                              subirArchivos(fileName4,
-                                  '${widget.solicitude.idsolicitud}', '5');
-                              updateControlTareas(
-                                  '5', '${widget.solicitude.idsolicitud}', "F");
-                            },
-                            //: null,
-                            color: Colors.lightBlue,
-                            child: Text('Subir Cotizacion',
-                                style: TextStyle(color: Colors.white)),
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Visibility(
-                          visible: (listaAdjunto.length != 0) ? true : false,
-                          child: Container(
-                            height: 200,
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                      color: Colors.black,
+                          //Cotizacion (paso 5)
+                          IgnorePointer(
+                            ignoring: opcion4,
+                            child: ExpansionTile(
+                              title: Text("Cotizacion"),
+                              leading:
+                                  Icon(MdiIcons.textBox, color: Colors.blue),
+                              children: [
+                                //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                //  children: [
+                                TextButton.icon(
+                                  onPressed: () async {
+                                    guardarMovimientos(
+                                        '${widget.solicitude.idsolicitud}',
+                                        '',
+                                        '5',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '');
+                                    result =
+                                        await FilePicker.platform.pickFiles();
+                                    if (result != null) {
+                                      File file =
+                                          File(result.files.single.path);
+                                      setState(() {
+                                        fileName4 = file.path;
+                                        btnSubirArchivosCot = true;
+                                      });
+                                    } else {}
+                                  },
+                                  icon: Icon(MdiIcons.fileUpload, size: 18),
+                                  label: Text("Cargar Archivo"),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                if (result != null)
+                                  RichText(
+                                    text: TextSpan(
+                                      //text: '',
+                                      style: DefaultTextStyle.of(context).style,
+                                      children: const <TextSpan>[
+                                        TextSpan(
+                                            text: 'Archivo cargado:',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ],
                                     ),
-                                itemCount: listaAdjunto.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return ListTile(
-                                      onTap: () {
-                                        launch(
-                                            listaAdjunto[index].linkDescarga);
-                                      },
-                                      leading: Icon(Icons.file_present),
-                                      trailing: Text(
-                                        "",
-                                        style: TextStyle(
-                                            color: Colors.green, fontSize: 15),
-                                      ),
-                                      title: Text(
-                                          "${listaAdjunto[index].nombreArchivo}"));
-                                }),
+                                  ),
+                                Text("$fileName4"),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Visibility(
+                                  visible: btnSubirArchivosCot,
+                                  child: MaterialButton(
+                                    minWidth: 100.0,
+                                    height: 40.0,
+                                    onPressed: //fileName4 != ""?
+                                        () {
+                                      subirArchivos(
+                                          fileName4,
+                                          '${widget.solicitude.idsolicitud}',
+                                          '5');
+                                      updateControlTareas(
+                                          '5',
+                                          '${widget.solicitude.idsolicitud}',
+                                          "F");
+                                    },
+                                    //: null,
+                                    color: Colors.lightBlue,
+                                    child: Text('Subir Cotizacion',
+                                        style: TextStyle(color: Colors.white)),
+                                  ),
+                                ),
+
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Visibility(
+                                  visible:
+                                      (listaAdjunto.length != 0) ? true : false,
+                                  child: Container(
+                                    height: 200,
+                                    child: ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            Divider(
+                                              color: Colors.black,
+                                            ),
+                                        itemCount: listaAdjunto.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return ListTile(
+                                              onTap: () {
+                                                launch(listaAdjunto[index]
+                                                    .linkDescarga);
+                                              },
+                                              leading: Icon(Icons.file_present),
+                                              trailing: Text(
+                                                "",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 15),
+                                              ),
+                                              title: Text(
+                                                  "${listaAdjunto[index].nombreArchivo}"));
+                                        }),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //Seguimiento (paso 6)
-                  ExpansionTile(
-                      title: Text("Seguimiento"),
-                      leading:
-                          Icon(MdiIcons.clipboardSearch, color: Colors.blue),
-                      children: [
-                        Container(
-                          child: FutureBuilder(
-                              future: NetworkHelper.attemptSeguimiento(
-                                  '${widget.solicitude.idsolicitud}'),
-                              builder:
-                                  (_, AsyncSnapshot<List<Listasoli>> snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                  case ConnectionState.waiting:
-                                    return Center(
-                                      child: Container(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            CircularProgressIndicator(),
-                                            Text("Cargando....")
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  default:
-                                    if (snapshot.hasError)
-                                      return Container(
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.error),
-                                              SizedBox(
-                                                height: 20.0,
+                          //Seguimiento (paso 6)
+                          ExpansionTile(
+                              title: Text("Seguimiento"),
+                              leading: Icon(MdiIcons.clipboardSearch,
+                                  color: Colors.blue),
+                              children: [
+                                Container(
+                                  child: FutureBuilder(
+                                      future: NetworkHelper.attemptSeguimiento(
+                                          '${widget.solicitude.idsolicitud}'),
+                                      builder: (_,
+                                          AsyncSnapshot<List<Listasoli>>
+                                              snapshot) {
+                                        switch (snapshot.connectionState) {
+                                          case ConnectionState.none:
+                                          case ConnectionState.waiting:
+                                            return Center(
+                                              child: Container(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    CircularProgressIndicator(),
+                                                    Text("Cargando....")
+                                                  ],
+                                                ),
                                               ),
-                                              Text(
-                                                  "No se pudo cargar los datos, por favor intente mas tarde.")
-                                            ],
-                                          ));
-                                    else {
-                                      if (!snapshot.hasData)
-                                        return Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.error),
-                                                SizedBox(
-                                                  height: 20.0,
-                                                ),
-                                                Text(
-                                                    "No se pudo cargar los datos, por favor intente mas tarde.")
-                                              ],
-                                            ));
+                                            );
+                                          default:
+                                            if (snapshot.hasError)
+                                              return Container(
+                                                  alignment: Alignment.center,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(Icons.error),
+                                                      SizedBox(
+                                                        height: 20.0,
+                                                      ),
+                                                      Text(
+                                                          "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                    ],
+                                                  ));
+                                            else {
+                                              if (!snapshot.hasData)
+                                                return Container(
+                                                    alignment: Alignment.center,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(Icons.error),
+                                                        SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        Text(
+                                                            "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                      ],
+                                                    ));
 
-                                      listasoli = snapshot.data;
-                                      return Container(
-                                        child: HorizontalDataTable(
-                                          leftHandSideColumnWidth: 100,
-                                          rightHandSideColumnWidth: 370,
-                                          isFixedHeader: true,
-                                          headerWidgets: _getTitleWidget(),
-                                          leftSideItemBuilder:
-                                              _generateFirstColumnRow,
-                                          rightSideItemBuilder:
-                                              _generateRightHandSideColumnRow,
-                                          itemCount: listasoli.length,
-                                          rowSeparatorWidget: const Divider(
-                                            color: Colors.blue,
-                                            height: 1.0,
-                                            thickness: 0.0,
-                                          ),
-                                        ),
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                2,
-                                        // MediaQuery.of(context).size.height,
-                                      );
-                                    }
-                                }
-                              }),
-                        ),
-                      ]),
-                  //Cierre (paso 7)
-                  ExpansionTile(
-                    title: Text("Cierre"),
-                    leading: Icon(MdiIcons.checkboxMarkedCircleOutline,
-                        color: Colors.blue),
-                    children: [
-                      Container(
-                          child: FutureBuilder(
-                              future: NetworkHelper.attemptMotivoRechazo(),
-                              builder: (context,
-                                  AsyncSnapshot<List<ListMotivo>> snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                  case ConnectionState.waiting:
-                                    return Center(
-                                      child: Container(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            CircularProgressIndicator(),
-                                            Text("Cargando datos")
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  default:
-                                    if (snapshot.hasError)
-                                      return Container(
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.error),
-                                              SizedBox(
-                                                height: 20.0,
+                                              listasoli = snapshot.data;
+                                              return Container(
+                                                child: HorizontalDataTable(
+                                                  leftHandSideColumnWidth: 100,
+                                                  rightHandSideColumnWidth: 370,
+                                                  isFixedHeader: true,
+                                                  headerWidgets:
+                                                      _getTitleWidget(),
+                                                  leftSideItemBuilder:
+                                                      _generateFirstColumnRow,
+                                                  rightSideItemBuilder:
+                                                      _generateRightHandSideColumnRow,
+                                                  itemCount: listasoli.length,
+                                                  rowSeparatorWidget:
+                                                      const Divider(
+                                                    color: Colors.blue,
+                                                    height: 1.0,
+                                                    thickness: 0.0,
+                                                  ),
+                                                ),
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    2,
+                                                // MediaQuery.of(context).size.height,
+                                              );
+                                            }
+                                        }
+                                      }),
+                                ),
+                              ]),
+                          //Cierre (paso 7)
+                          ExpansionTile(
+                            title: Text("Cierre"),
+                            leading: Icon(MdiIcons.checkboxMarkedCircleOutline,
+                                color: Colors.blue),
+                            children: [
+                              Container(
+                                  child: FutureBuilder(
+                                      future:
+                                          NetworkHelper.attemptMotivoRechazo(),
+                                      builder: (context,
+                                          AsyncSnapshot<List<ListMotivo>>
+                                              snapshot) {
+                                        switch (snapshot.connectionState) {
+                                          case ConnectionState.none:
+                                          case ConnectionState.waiting:
+                                            return Center(
+                                              child: Container(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    CircularProgressIndicator(),
+                                                    Text("Cargando datos")
+                                                  ],
+                                                ),
                                               ),
-                                              Text(
-                                                  "No se pudo cargar los datos, por favor intente mas tarde.")
-                                            ],
-                                          ));
-                                    else {
-                                      if (!snapshot.hasData)
-                                        return Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.error),
-                                                SizedBox(
-                                                  height: 20.0,
-                                                ),
-                                                Text(
-                                                    "No se pudo cargar los datos, por favor intente mas tarde.")
-                                              ],
-                                            ));
-                                      final motivos = snapshot.data ?? [];
+                                            );
+                                          default:
+                                            if (snapshot.hasError)
+                                              return Container(
+                                                  alignment: Alignment.center,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(Icons.error),
+                                                      SizedBox(
+                                                        height: 20.0,
+                                                      ),
+                                                      Text(
+                                                          "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                    ],
+                                                  ));
+                                            else {
+                                              if (!snapshot.hasData)
+                                                return Container(
+                                                    alignment: Alignment.center,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(Icons.error),
+                                                        SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        Text(
+                                                            "No se pudo cargar los datos, por favor intente mas tarde.")
+                                                      ],
+                                                    ));
+                                              final motivos =
+                                                  snapshot.data ?? [];
 
-                                      if (motivos.length == 0)
-                                        return Container(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.error),
-                                                SizedBox(
-                                                  height: 20.0,
-                                                ),
-                                                Text(
-                                                    "No hay Motivos disponibles.")
-                                              ],
-                                            ));
-                                      return MyStatefulWidget(
-                                        list_item: snapshot.data,
-                                        idsolicitud:
-                                            "${widget.solicitude.idsolicitud}",
-                                      );
-                                    }
-                                }
-                              })),
-                    ],
-                  ),
-                  //Registrar Cliente
-                ],
-              ),
+                                              if (motivos.length == 0)
+                                                return Container(
+                                                    alignment: Alignment.center,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(Icons.error),
+                                                        SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        Text(
+                                                            "No hay Motivos disponibles.")
+                                                      ],
+                                                    ));
+                                              return MyStatefulWidget(
+                                                list_item: snapshot.data,
+                                                idsolicitud:
+                                                    "${widget.solicitude.idsolicitud}",
+                                              );
+                                            }
+                                        }
+                                      })),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                }
+              },
             ),
           ),
         ),
+        // );
       ),
     );
   }
@@ -1292,6 +1401,12 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     registroafectado = await NetworkHelper.attempUpdatecontrolTareas(
         idtarea, idsolicitud, estado);
     return registroafectado;
+  }
+
+  Future<EntidadMov> obtenerMovimientos(String idsolicitud) async {
+    movimientosList =
+        await NetworkHelper.attemptConsultMovimientos(idsolicitud);
+    return movimientosList;
   }
 
   Future<String> guardarMovimientos(
