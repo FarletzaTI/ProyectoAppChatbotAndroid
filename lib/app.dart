@@ -435,8 +435,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _home() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [Expanded(child: Image.asset('images/SoloLogo.png'))],
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Image.asset('images/logooff.png'),
+        )
+      ],
     );
   }
 
